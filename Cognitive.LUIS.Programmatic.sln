@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cognitive.LUIS.Programmatic", "Cognitive.LUIS.Programmatic\Cognitive.LUIS.Programmatic.csproj", "{4420B09A-7F25-4E57-8088-A3B75FBD4F4C}"
 EndProject

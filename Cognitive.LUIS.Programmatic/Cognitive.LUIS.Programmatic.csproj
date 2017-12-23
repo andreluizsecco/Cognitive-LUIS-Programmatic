@@ -9,12 +9,12 @@
     <Description>.NET SDK for LUIS Programmatic APIs</Description>
     <PackageLicenseUrl>https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic</PackageProjectUrl>
-    <PackageIconUrl></PackageIconUrl>
+    <PackageIconUrl>https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/blob/master/logo.jpg</PackageIconUrl>
     <PackageTags>Microsoft Cognitive LUIS Programmatic</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyName>Cognitive.LUIS.Programmatic</AssemblyName>
     <RootNamespace>Cognitive.LUIS.Programmatic</RootNamespace>
-    <Version>1.0.1</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

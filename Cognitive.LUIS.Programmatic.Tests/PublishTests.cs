@@ -1,6 +1,8 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic.Tests
@@ -14,7 +16,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public PublishTests()
         {
             var client = new LuisProgClient(SUBSCRIPTION_KEY);
-            
+
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
             {
@@ -28,6 +30,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldSendPublishRequest()
         {
+            IEnumerable<Training> trainingList;
             var client = new LuisProgClient(SUBSCRIPTION_KEY);
             await client.AddIntentAsync("IntentTest", _appId, "1.0");
 
@@ -36,8 +39,13 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 Text = "Hello World!",
                 IntentName = "IntentTest"
             });
-            client.TrainAsync(_appId, "1.0").Wait();
-            client.GetTrainingStatusListAsync(_appId, "1.0").Wait();
+            await client.TrainAsync(_appId, "1.0");
+
+            do
+            {
+                trainingList = await client.GetTrainingStatusListAsync(_appId, "1.0");
+            }
+            while (!trainingList.All(x => x.Details.Status.Equals("Success")));
 
             var publish = await client.PublishAsync(_appId, "1.0", false, "westus");
 
