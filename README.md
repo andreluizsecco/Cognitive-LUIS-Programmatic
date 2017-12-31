@@ -12,6 +12,8 @@ Supported frameworks: [https://docs.microsoft.com/pt-br/dotnet/standard/net-stan
 
 ## Installing / Getting started
 
+This SDK is available through Nuget packages: [https://www.nuget.org/packages/Cognitive.LUIS.Programmatic](https://www.nuget.org/packages/Cognitive.LUIS.Programmatic)
+
 #### Nuget
 ```
 Install-Package Cognitive.LUIS.Programmatic
@@ -23,7 +25,7 @@ dotnet add package Cognitive.LUIS.Programmatic
 ```
 ## How to Use
 
-Check the our Wiki: [https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/get-started](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/geet-started)
+Check the our Wiki: [https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/get-started](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/get-started)
 
 ## Roadmap
 
