@@ -31,7 +31,7 @@ Check the our Wiki: [https://github.com/andreluizsecco/Cognitive-LUIS-Programmat
 
 Check the complete roadmap: [https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/roadmap](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/roadmap)
 
-### Implemented Features (v1.0.3)
+### Implemented Features (v1.0.4)
 #### Apps, Intents and Entities
 * Get all
 * Get by id
