@@ -9,7 +9,7 @@ namespace Cognitive.LUIS.Programmatic
 {
     public class LuisProgClient : ServiceClient, ILuisProgClient
     {
-        public LuisProgClient(string subscriptionKey) : base(subscriptionKey) { }
+        public LuisProgClient(string subscriptionKey, Location location) : base(subscriptionKey, location) { }
 
         #region Apps
 

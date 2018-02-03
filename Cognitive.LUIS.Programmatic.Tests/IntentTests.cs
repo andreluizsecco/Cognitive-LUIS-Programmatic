@@ -11,11 +11,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
     public class IntentTests
     {
         private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
+        private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
         public IntentTests()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
                 _appId = app.Id;
@@ -26,7 +27,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetIntentList()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var intents = await client.GetAllIntentsAsync(_appId, "1.0");
             Assert.IsInstanceOfType(intents, typeof(IEnumerable<Intent>));
         }
@@ -34,7 +35,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetExistIntentById()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var intents = await client.GetAllIntentsAsync(_appId, "1.0");
 
             var firstIntent = intents.FirstOrDefault();
@@ -46,7 +47,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsIntentId()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
 
             var intent = await client.GetIntentByIdAsync("51593248-363e-4a08-b946-2061964dc690", _appId, "1.0");
             Assert.IsNull(intent);
@@ -55,7 +56,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetIntentByName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             if (await client.GetIntentByNameAsync("IntentTest", _appId, "1.0") == null)
                 await client.AddIntentAsync("IntentTest", _appId, "1.0");
 
@@ -66,7 +67,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsIntentName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var intentTest = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
             if (intentTest != null)
                 await client.DeleteIntentAsync(intentTest.Id, _appId, "1.0");
@@ -78,7 +79,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldAddNewIntentTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
 
             var intentTest = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
             if (intentTest != null)
@@ -91,7 +92,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnIntentNewIntentTestWhenAlreadyExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.AddIntentAsync("IntentTest", _appId, "1.0"));
 
@@ -101,7 +102,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldRenameIntentTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var intent = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
             var intentChanged = await client.GetIntentByNameAsync("IntentTestChanged", _appId, "1.0");
 
@@ -123,7 +124,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameIntentTestWhenExistsIntentWithSameName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var intent = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
             var intentChanged = await client.GetIntentByNameAsync("IntentTestChanged", _appId, "1.0");
             string intentChangedId = null;
@@ -145,7 +146,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameIntentTestWhenNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameIntentAsync("51593248-363e-4a08-b946-2061964dc690", "IntentTest", _appId, "1.0"));
 
@@ -155,7 +156,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldDeleteIntentTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             if (await client.GetIntentByNameAsync("IntentTest", _appId, "1.0") == null)
                 await client.AddIntentAsync("IntentTest", _appId, "1.0");
 
@@ -169,7 +170,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnDeleteIntentTestWhenNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.DeleteIntentAsync("51593248-363e-4a08-b946-2061964dc690", _appId, "1.0"));
 

@@ -11,11 +11,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
     public class EntityTests
     {
         private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
+        private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
         public EntityTests()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
                 _appId = app.Id;
@@ -26,7 +27,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetEntityList()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var entities = await client.GetAllEntitiesAsync(_appId, "1.0");
             Assert.IsInstanceOfType(entities, typeof(IEnumerable<Entity>));
         }
@@ -34,7 +35,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetExistEntityById()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var entities = await client.GetAllEntitiesAsync(_appId, "1.0");
             if (entities.Count == 0)
             {
@@ -51,7 +52,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsEntityId()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
 
             var entity = await client.GetEntityByIdAsync("51593248-363e-4a08-b946-2061964dc690", _appId, "1.0");
             Assert.IsNull(entity);
@@ -60,7 +61,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetEntityByName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             if (await client.GetEntityByNameAsync("EntityTest", _appId, "1.0") == null)
                 await client.AddEntityAsync("EntityTest", _appId, "1.0");
 
@@ -71,7 +72,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsEntityName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var entityTest = await client.GetEntityByNameAsync("EntityTest", _appId, "1.0");
             if (entityTest != null)
                 await client.DeleteEntityAsync(entityTest.Id, _appId, "1.0");
@@ -83,7 +84,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldAddNewEntityTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
 
             var entityTest = await client.GetEntityByNameAsync("EntityTest", _appId, "1.0");
             if (entityTest != null)
@@ -96,7 +97,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnEntityNewEntityTestWhenAlreadyExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.AddEntityAsync("EntityTest", _appId, "1.0"));
 
@@ -106,7 +107,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldRenameEntityTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var entity = await client.GetEntityByNameAsync("EntityTest", _appId, "1.0");
             var entityChanged = await client.GetEntityByNameAsync("EntityTestChanged", _appId, "1.0");
 
@@ -128,7 +129,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameEntityTestWhenExistsEntityWithSameName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var entity = await client.GetEntityByNameAsync("EntityTest", _appId, "1.0");
             var entityChanged = await client.GetEntityByNameAsync("EntityTestChanged", _appId, "1.0");
             string entityChangedId = null;
@@ -150,7 +151,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameEntityTestWhenNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameEntityAsync("51593248-363e-4a08-b946-2061964dc690", "EntityTest", _appId, "1.0"));
 
@@ -160,7 +161,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldDeleteEntityTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             if (await client.GetEntityByNameAsync("EntityTest", _appId, "1.0") == null)
                 await client.AddEntityAsync("EntityTest", _appId, "1.0");
 
@@ -174,7 +175,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnDeleteEntityTestWhenNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.DeleteEntityAsync("51593248-363e-4a08-b946-2061964dc690", _appId, "1.0"));
 

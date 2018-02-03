@@ -10,11 +10,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
     public class TrainingTests
     {
         private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
+        private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
         public TrainingTests()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
                 _appId = app.Id;
@@ -25,7 +26,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldSendTrainingRequest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var trainingDetails = await client.TrainAsync(_appId, "1.0");
 
             Assert.IsNotNull(trainingDetails);
@@ -34,7 +35,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetTrainingStatusList()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var training = await client.GetTrainingStatusListAsync(_appId, "1.0");
 
             Assert.IsInstanceOfType(training, typeof(IEnumerable<Training>));
@@ -43,7 +44,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnTrainModelWhenAppNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.TrainAsync("51593248-363e-4a08-b946-2061964dc690", "1.0"));
 

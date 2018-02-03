@@ -11,11 +11,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
     public class PublishTests
     {
         private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
+        private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
         public PublishTests()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
 
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
@@ -31,7 +32,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public async Task ShouldSendPublishRequest()
         {
             IEnumerable<Training> trainingList;
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             await client.AddIntentAsync("IntentTest", _appId, "1.0");
 
             await client.AddExampleAsync(_appId, "1.0", new Example
@@ -55,7 +56,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnPublishModelWhenAppNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.PublishAsync("51593248-363e-4a08-b946-2061964dc690", "1.0", false, "westus"));
 

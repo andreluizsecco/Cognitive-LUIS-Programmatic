@@ -9,11 +9,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
     public class ExampleTests
     {
         private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
+        private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
         public ExampleTests()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
                 _appId = app.Id;
@@ -24,7 +25,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldAddExample()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             string intentTestId = null;
             var intentTest = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
             if (intentTest != null)
@@ -46,7 +47,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnAddExampleWhenIntentTestNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY);
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var intentTest = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
             if (intentTest != null)
                 await client.DeleteIntentAsync(intentTest.Id, _appId, "1.0");

@@ -10,18 +10,21 @@ namespace Cognitive.LUIS.Programmatic
 {
     public class ServiceClient
     {
-        private const string BASE_URL = "https://westus.api.cognitive.microsoft.com/luis/api/v2.0";
+        private readonly string _baseUrl;
         private readonly string _subscriptionKey;
 
-        public ServiceClient(string subscriptionKey) =>
+        public ServiceClient(string subscriptionKey, Location location)
+        {
             _subscriptionKey = subscriptionKey;
+            _baseUrl = $"https://{location.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0";
+        }
 
         protected async Task<HttpResponseMessage> Get(string path)
         {
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                return await client.GetAsync($"{BASE_URL}{path}");
+                return await client.GetAsync($"{_baseUrl}{path}");
             }
         }
 
@@ -30,7 +33,7 @@ namespace Cognitive.LUIS.Programmatic
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                var response = await client.PostAsync($"{BASE_URL}{path}", null);
+                var response = await client.PostAsync($"{_baseUrl}{path}", null);
                 var responseContent = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                     return responseContent;
@@ -50,7 +53,7 @@ namespace Cognitive.LUIS.Programmatic
                 {
                     client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    var response = await client.PostAsync($"{BASE_URL}{path}", content);
+                    var response = await client.PostAsync($"{_baseUrl}{path}", content);
                     var responseContent = await response.Content.ReadAsStringAsync();
                     if (response.IsSuccessStatusCode)
                         return responseContent;
@@ -71,7 +74,7 @@ namespace Cognitive.LUIS.Programmatic
                 {
                     client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    var response = await client.PutAsync($"{BASE_URL}{path}", content);
+                    var response = await client.PutAsync($"{_baseUrl}{path}", content);
                     if (!response.IsSuccessStatusCode)
                     {
                         var responseContent = await response.Content.ReadAsStringAsync();
@@ -87,7 +90,7 @@ namespace Cognitive.LUIS.Programmatic
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                var response = await client.DeleteAsync($"{BASE_URL}{path}");
+                var response = await client.DeleteAsync($"{_baseUrl}{path}");
                 if (!response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
