@@ -28,7 +28,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
             var exemples = await client.GetAllLabeledExemplesAsync(_appId, "1.0");
-            Assert.IsInstanceOfType(exemples, typeof(IEnumerable<LabeledExemple>));
+            Assert.IsInstanceOfType(exemples, typeof(IEnumerable<LabeledExample>));
         }
 
         [TestMethod]

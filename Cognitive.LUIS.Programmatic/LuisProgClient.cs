@@ -346,12 +346,12 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="skip">total to skip</param>
         /// <param name="take">total to get</param>
         /// <returns>A list of labeled exemples</returns>
-        public async Task<IReadOnlyCollection<LabeledExemple>> GetAllLabeledExemplesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
+        public async Task<IReadOnlyCollection<LabeledExample>> GetAllLabeledExemplesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             var response = await Get($"/apps/{appId}/versions/{appVersionId}/examples?skip={skip}&take={take}");
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<IReadOnlyCollection<LabeledExemple>>(content);
+                return JsonConvert.DeserializeObject<IReadOnlyCollection<LabeledExample>>(content);
             else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
             {
                 var exception = JsonConvert.DeserializeObject<ServiceException>(content);

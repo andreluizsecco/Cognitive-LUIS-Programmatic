@@ -16,7 +16,7 @@ namespace Cognitive.LUIS.Programmatic.Models
         public int EndCharIndex { get; set; }
     }
 
-    public class LabeledExemple
+    public class LabeledExample
     {
         public string Text { get; set; }
         public string IntentLabel { get; set; }
