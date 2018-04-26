@@ -348,7 +348,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>A list of labeled exemples</returns>
         public async Task<IReadOnlyCollection<LabeledExemple>> GetAllLabeledExemplesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
-            var response = await Get($"/apps/{appId}/versions/{appVersionId}/exemples?skip={skip}&take={take}");
+            var response = await Get($"/apps/{appId}/versions/{appVersionId}/examples?skip={skip}&take={take}");
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
                 return JsonConvert.DeserializeObject<IReadOnlyCollection<LabeledExemple>>(content);

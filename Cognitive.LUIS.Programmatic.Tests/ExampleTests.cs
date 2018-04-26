@@ -1,6 +1,7 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic.Tests
@@ -20,6 +21,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 _appId = app.Id;
             else
                 _appId = client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0").Result;
+        }
+
+        [TestMethod]
+        public async Task ShouldGetLabeledExempleList()
+        {
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var exemples = await client.GetAllLabeledExemplesAsync(_appId, "1.0");
+            Assert.IsInstanceOfType(exemples, typeof(IEnumerable<LabeledExemple>));
         }
 
         [TestMethod]
