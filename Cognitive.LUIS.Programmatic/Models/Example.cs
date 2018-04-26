@@ -15,4 +15,19 @@ namespace Cognitive.LUIS.Programmatic.Models
         public int StartCharIndex { get; set; }
         public int EndCharIndex { get; set; }
     }
+
+    public class LabeledExemple
+    {
+        public string Text { get; set; }
+        public string IntentLabel { get; set; }
+        public string[] TokenizedText { get; set; }
+        public IEnumerable<EntityLabel> EntityLabels { get; set; }
+        public IEnumerable<IntentPrediction> IntentPredictions { get; set; }
+    }
+
+    public class IntentPrediction
+    {
+        public string Name { get; set; }
+        public double? Score { get; set; }
+    }
 }
