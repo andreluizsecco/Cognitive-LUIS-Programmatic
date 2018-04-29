@@ -7,7 +7,7 @@
 Branch | Build status | Nuget package
 -------|-------|--------------
 master | [![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd/branch/master?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|[![NuGet](https://img.shields.io/nuget/v/Cognitive.LUIS.Programmatic.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Cognitive.LUIS.Programmatic/)
-dev | [![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd/branch/dev?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|-
+dev | [![Build status](https://ci.appveyor.com/api/projects/status/qp882n6f5uutiaf8/branch/dev?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|-
 
 ## Dependencies
 .NET Standard 2.0
