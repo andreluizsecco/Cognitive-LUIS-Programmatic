@@ -1,9 +1,13 @@
 # Cognitive-LUIS-Programmatic
 .NET SDK for [LUIS Programmatic APIs](https://westus.dev.cognitive.microsoft.com/docs/services/5890b47c39e2bb17b84a55ff)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)
 [![License](https://img.shields.io/github/license/andreluizsecco/cognitive-luis-programmatic.svg)](LICENSE)
 [![Issues open](https://img.shields.io/github/issues/andreluizsecco/cognitive-luis-programmatic.svg)](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/)
+
+Branch | Build status | Package name
+-------|-------|--------------
+master | [![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd/branch/master?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|[![NuGet](https://img.shields.io/nuget/v/Cognitive.LUIS.Programmatic.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Cognitive.LUIS.Programmatic/)
+dev | [![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd/branch/dev?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|-
 
 ## Dependencies
 .NET Standard 2.0
