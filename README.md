@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/andreluizsecco/cognitive-luis-programmatic.svg)](LICENSE)
 [![Issues open](https://img.shields.io/github/issues/andreluizsecco/cognitive-luis-programmatic.svg)](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/)
 
-Branch | Build status | Package name
+Branch | Build status | Nuget package
 -------|-------|--------------
 master | [![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd/branch/master?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|[![NuGet](https://img.shields.io/nuget/v/Cognitive.LUIS.Programmatic.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Cognitive.LUIS.Programmatic/)
 dev | [![Build status](https://ci.appveyor.com/api/projects/status/2ae2e5d0dsprpfjd/branch/dev?svg=true)](https://ci.appveyor.com/project/andreluizsecco/cognitive-luis-programmatic)|-
