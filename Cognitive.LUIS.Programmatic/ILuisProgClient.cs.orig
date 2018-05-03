@@ -18,7 +18,7 @@ namespace Cognitive.LUIS.Programmatic
         Task<Intent> GetIntentByNameAsync(string name, string appId, string appVersionId);
         Task<string> AddIntentAsync(string name, string appId, string appVersionId);
         Task RenameIntentAsync(string id, string name, string appId, string appVersionId);
-        Task DeleteIntentAsync(string id, string appId, string appVersionId, bool deleteUtterances = false);
+        Task DeleteIntentAsync(string id, string appId, string appVersionId);
 
         Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId);
         Task<Entity> GetEntityByIdAsync(string id, string appId, string appVersionId);
@@ -28,10 +28,8 @@ namespace Cognitive.LUIS.Programmatic
         Task DeleteEntityAsync(string id, string appId, string appVersionId);
 
         Task<Utterance> AddExampleAsync(string appId, string appVersionId, Example model);
-        Task<BatchExample[]> AddBatchExampleAsync(string appId, string appVersionId, Example[] model);
 
         Task<TrainingDetails> TrainAsync(string appId, string appVersionId);
-        Task<TrainingDetails> TrainAndGetCompletionStatusAsync(string appId, string appVersionId);
         Task<IEnumerable<Training>> GetTrainingStatusListAsync(string appId, string appVersionId);
 
         Task<Publish> PublishAsync(string appId, string appVersionId, bool isStaging, string region);

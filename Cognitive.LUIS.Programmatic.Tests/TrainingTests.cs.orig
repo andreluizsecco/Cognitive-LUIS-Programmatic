@@ -50,15 +50,5 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
             Assert.AreEqual(ex.Message, "Cannot find an application with the specified ID");
         }
-
-        [TestMethod]
-        public async Task ShouldSendTrainAndGetCompletionStatus()
-        {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
-            var trainingDetails = await client.TrainAndGetCompletionStatusAsync(_appId, "1.0");
-
-            Assert.IsNotNull(trainingDetails);
-        }
-
     }
 }

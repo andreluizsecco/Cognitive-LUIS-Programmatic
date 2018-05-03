@@ -168,33 +168,6 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [TestMethod]
-        public async Task ShouldDeleteIntentAndUtterancesTest()
-        {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
-            if (await client.GetIntentByNameAsync("IntentTest", _appId, "1.0") == null)
-                await client.AddIntentAsync("IntentTest", _appId, "1.0");
-
-            // Add example for the intent 
-            var exampleAdded = await client.AddExampleAsync(_appId, "1.0", new Example()
-                                                                            {
-                                                                                IntentName = "IntentTest",
-                                                                                Text = "This is sample utterance"
-                                                                            });
-
-            if (!string.IsNullOrEmpty(exampleAdded?.UtteranceText))
-            {
-
-                var intent = await client.GetIntentByNameAsync("IntentTest", _appId, "1.0");
-                await client.DeleteIntentAsync(intent.Id, _appId, "1.0", true);
-
-                // TODO : once the get exampleById available, get the exmaple and assert for null
-                intent = await client.GetIntentByIdAsync(intent.Id, _appId, "1.0");
-
-                Assert.IsNull(intent);
-            }
-        }
-
-        [TestMethod]
         public async Task ShouldThrowExceptionOnDeleteIntentTestWhenNotExists()
         {
             var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);

@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic
@@ -169,10 +168,7 @@ namespace Cognitive.LUIS.Programmatic
         public async Task<Intent> GetIntentByNameAsync(string name, string appId, string appVersionId)
         {
             var apps = await GetAllIntentsAsync(appId, appVersionId);
-            if (apps != null)
-                return apps.FirstOrDefault(intent => intent.Name.Equals(name));
-            else
-                return null;
+            return apps.FirstOrDefault(intent => intent.Name.Equals(name));
         }
 
         /// <summary>
@@ -210,17 +206,15 @@ namespace Cognitive.LUIS.Programmatic
         }
 
         /// <summary>
-        /// Deletes an intent classifier from the application. All the utterances will be moved under None intent if deleteUtterance is false(default behavior).
-        /// To delete all the utterances of the intent pass the deleteUtterance parameter value as true.
+        /// Deletes an intent classifier from the application
         /// </summary>
         /// <param name="id">intent id</param>
         /// <param name="appId">app Id</param>
         /// <param name="appVersionId">app version</param>
-        /// <param name="deleteUtterances">delete utterances flag. Optional paramater with default value 'false'.</param>
         /// <returns></returns>
-        public async Task DeleteIntentAsync(string id, string appId, string appVersionId, bool deleteUtterances = false)
+        public async Task DeleteIntentAsync(string id, string appId, string appVersionId)
         {
-            await Delete($"/apps/{appId}/versions/{appVersionId}/intents/{id}?deleteUtterances={deleteUtterances}");
+            await Delete($"/apps/{appId}/versions/{appVersionId}/intents/{id}");
         }
 
         #endregion
@@ -344,37 +338,6 @@ namespace Cognitive.LUIS.Programmatic
             return JsonConvert.DeserializeObject<Utterance>(response);
         }
 
-
-        /// <summary>
-        /// Adds batch of labeled examples to the application
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="appVersionId"></param>
-        /// <param name="models"></param>
-        /// <returns></returns>
-        public async Task<BatchExample[]> AddBatchExampleAsync(string appId, string appVersionId, Example[] models)
-        {
-            if (models.Length < 100)
-            {
-                var response = await Post($"/apps/{appId}/versions/{appVersionId}/examples", models);
-                return JsonConvert.DeserializeObject<BatchExample[]>(response);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Delets a example from the application.
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="appVersionId"></param>
-        /// <param name="exampleId"></param>
-        /// <returns></returns>
-        public async Task DeleteExampleAsync(string appId, string appVersionId, string exampleId)
-        {
-            await Delete($"/apps/{appId}/versions/{appVersionId}/examples/{exampleId}");
-        }
-
         #endregion
 
         #region Train
@@ -408,71 +371,6 @@ namespace Cognitive.LUIS.Programmatic
                 var exception = JsonConvert.DeserializeObject<ServiceException>(content);
                 throw new Exception($"{ exception.Error.Code} - { exception.Error.Message}");
             }
-        }
-        /// <summary>
-        /// Requests train and wait till the training complets, returns the final status.
-        /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="appVersionId"></param>
-        /// <returns></returns>
-         public async Task<TrainingDetails> TrainAndGetCompletionStatusAsync(string appId, string appVersionId)
-        {
-            var response = await Post($"/apps/{appId}/versions/{appVersionId}/train");
-           
-            // Ignore the first response :TODO
-             TrainingDetails trainingDetails =  JsonConvert.DeserializeObject<TrainingDetails>(response);
-
-            // if training status(2) is up to date return the final training status.
-            if (trainingDetails.StatusId.Equals(TrainingStatus.UpToDate))
-            {
-                return trainingDetails;
-            }
-          
-            // else pool for status with max timeout 15 mins
-            DateTime maximumWaitTime = DateTime.Now.AddMinutes(15);
-
-            IEnumerable<Training> trainingStatuses;
-            int pendingCount = int.MaxValue;
-          
-            while ((pendingCount > 0) && (DateTime.Now < maximumWaitTime))
-            {
-                // Sleep for 2 seconds
-                Thread.Sleep(2000);
-                pendingCount = 0;
-              
-                var trainStatusresponse = await Get($"/apps/{appId}/versions/{appVersionId}/train");
-                var content = await trainStatusresponse.Content.ReadAsStringAsync();
-                if (trainStatusresponse.IsSuccessStatusCode)
-                {
-                    trainingStatuses = JsonConvert.DeserializeObject<IEnumerable<Training>>(content);
-                }
-                else
-                {
-                    var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                    throw new Exception($"{ exception.Error.Code} - { exception.Error.Message}");
-                }
-
-                foreach (Training trainingStatus in trainingStatuses)
-                {
-                    trainingDetails = trainingStatus.Details;
-                    switch ((TrainingStatus)trainingDetails.StatusId)
-                    {
-                        case TrainingStatus.InProgress:
-                        case TrainingStatus.Queued:
-                            pendingCount++;
-                            break;
-                        case TrainingStatus.Fail:
-                            return trainingDetails;
-                    }
-                }
-            }
-
-            if (pendingCount > 0)
-            {
-                throw new Exception("TimeOut Message : LUIS application training is taking too long.");
-            }
-
-            return trainingDetails;
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic.Tests
@@ -42,6 +43,113 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var utterance = await client.AddExampleAsync(_appId, "1.0", example);
 
             Assert.IsNotNull(utterance);
+        }
+        [TestMethod]
+        public async Task ShouldAddLabelledExample()
+        {
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+
+            // Add simple entity name if not already exists
+            if (await client.GetEntityByNameAsync("name", _appId, "1.0") == null)
+                await client.AddEntityAsync("name", _appId, "1.0");
+
+            if (await client.GetIntentByNameAsync("IntentTest", _appId, "1.0") == null)
+                await client.AddIntentAsync("IntentTest", _appId, "1.0");
+
+            var labeledExample = new Example()
+            {
+                Text = "Who is Test User!",
+                IntentName = "IntentTest", 
+                EntityLabels = new List<EntityLabel>
+                {
+                    new EntityLabel
+                    {
+                        EntityName = "name", 
+                        StartCharIndex = 7,
+                        EndCharIndex = 15
+                    }
+                }
+            };
+
+            var utterance = await client.AddExampleAsync(_appId, "1.0", labeledExample);
+
+            Assert.IsNotNull(utterance);
+        }
+
+        [TestMethod]
+        public async Task ShoulAddBatchExample()
+        {
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+
+            if (await client.GetIntentByNameAsync("IntentTest", _appId, "1.0") == null)
+                await client.AddIntentAsync("IntentTest", _appId, "1.0");
+
+            List<Example> examples = new List<Example>();
+            examples.Add(new Example
+            {
+                Text = "Hello World!",
+                IntentName = "IntentTest"
+            });
+
+            examples.Add(new Example
+            {
+                Text = "This is a test Utterance",
+                IntentName = "IntentTest"
+            });
+
+            var addExamples = await client.AddBatchExampleAsync(_appId, "1.0", examples.ToArray());
+
+            Assert.AreEqual<int>(2, addExamples.Length);
+        }
+
+
+        [TestMethod]
+        public async Task ShoulAddBatchLbeledExample()
+        {
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            // Add simple entity name if not already exists
+            if (await client.GetEntityByNameAsync("name", _appId, "1.0") == null)
+                await client.AddEntityAsync("name", _appId, "1.0");
+
+            // Add simple intent name if not already exists
+            if (await client.GetIntentByNameAsync("IntentTest", _appId, "1.0") == null)
+                await client.AddIntentAsync("IntentTest", _appId, "1.0");
+
+            List<Example> examples = new List<Example>();
+            examples.Add(new Example()
+            {
+                Text = "Who is Bill?",
+                IntentName = "IntentTest",
+                EntityLabels = new List<EntityLabel>
+                {
+                    new EntityLabel
+                    {
+                        EntityName = "name",
+                        StartCharIndex = 7,
+                        EndCharIndex = 10
+                    }
+                }
+            });
+
+            examples.Add(new Example()
+            {
+                Text = "Who is Christopher?",
+                IntentName = "IntentTest",
+                EntityLabels = new List<EntityLabel>
+                {
+                    new EntityLabel
+                    {
+                        EntityName = "name",
+                        StartCharIndex = 7,
+                        EndCharIndex = 17
+                    }
+                }
+            });
+
+            var addExamples = await client.AddBatchExampleAsync(_appId, "1.0", examples.ToArray());
+
+            Assert.AreEqual<bool>(false, addExamples[0].hasError);
+            Assert.AreEqual<bool>(false, addExamples[1].hasError);
         }
 
         [TestMethod]
