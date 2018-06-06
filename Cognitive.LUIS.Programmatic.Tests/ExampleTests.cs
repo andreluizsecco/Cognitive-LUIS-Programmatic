@@ -148,8 +148,8 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
             var addExamples = await client.AddBatchExampleAsync(_appId, "1.0", examples.ToArray());
 
-            Assert.AreEqual<bool>(false, addExamples[0].hasError);
-            Assert.AreEqual<bool>(false, addExamples[1].hasError);
+            Assert.AreEqual<bool>(false, addExamples[0].HasError);
+            Assert.AreEqual<bool>(false, addExamples[1].HasError);
         }
 
         [TestMethod]
