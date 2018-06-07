@@ -38,7 +38,7 @@ namespace Cognitive.LUIS.Programmatic
         }
 
         /// <summary>
-        /// Delets a example from the application.
+        /// Deletes a example from the application.
         /// </summary>
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>

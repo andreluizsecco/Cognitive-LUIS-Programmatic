@@ -109,9 +109,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appVersionId">app version</param>
         /// <param name="deleteUtterances">delete utterances flag. Optional paramater with default value 'false'.</param>
         /// <returns></returns>
-        public async Task DeleteIntentAsync(string id, string appId, string appVersionId, bool deleteUtterances = false)
-        {
+        public async Task DeleteIntentAsync(string id, string appId, string appVersionId, bool deleteUtterances = false) =>
             await Delete($"/apps/{appId}/versions/{appVersionId}/intents/{id}?deleteUtterances={deleteUtterances}");
-        }
     }
 }
