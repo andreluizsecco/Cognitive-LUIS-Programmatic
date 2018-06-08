@@ -28,7 +28,7 @@ namespace Cognitive.LUIS.Programmatic
             else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
             {
                 var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                throw new Exception($"{exception.Error.Code} - {exception.Error.Message}");
+                throw new Exception($"{exception.Error.Code} - {exception.Error?.Message ?? exception.Message}");
             }
             return null;
         }
@@ -71,7 +71,7 @@ namespace Cognitive.LUIS.Programmatic
             if (!response.IsSuccessStatusCode)
             {
                 var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                throw new Exception($"{exception.Error?.Message ?? exception.Message}");
+                throw new Exception($"{exception.Error.Code} - {exception.Error?.Message ?? exception.Message}");
             }
             return responseContent;
         }

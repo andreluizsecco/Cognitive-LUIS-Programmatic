@@ -36,11 +36,11 @@ namespace Cognitive.LUIS.Programmatic
             return trainings;
         }
         /// <summary>
-        /// Requests train and wait till the training complets, returns the final status.
+        /// Requests train and wait till the training completes, returns the final status.
         /// </summary>
-        /// <param name="appId"></param>
-        /// <param name="appVersionId"></param>
-        /// <returns></returns>
+        /// <param name="appId">app id</param>
+        /// <param name="appVersionId">app version</param>
+        /// <returns>Training details object</returns>
         public async Task<TrainingDetails> TrainAndGetCompletionStatusAsync(string appId, string appVersionId)
         {
             var response = await Post($"apps/{appId}/versions/{appVersionId}/train");
@@ -85,7 +85,7 @@ namespace Cognitive.LUIS.Programmatic
             }
 
             if (pendingCount > 0)
-                throw new Exception("TimeOut Message : LUIS application training is taking too long.");
+                throw new Exception("Request timeout: LUIS application training is taking too long.");
 
             return trainingDetails;
         }

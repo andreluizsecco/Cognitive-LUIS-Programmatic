@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
@@ -33,8 +34,8 @@ namespace Cognitive.LUIS.Programmatic
                 var response = await Post($"apps/{appId}/versions/{appVersionId}/examples", models);
                 return JsonConvert.DeserializeObject<BatchExample[]>(response);
             }
-
-            return null;
+            else
+                throw new Exception("Batch limit exceeded. The maximum batch size is 100 items.");
         }
 
         /// <summary>
