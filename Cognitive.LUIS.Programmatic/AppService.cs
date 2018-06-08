@@ -15,16 +15,11 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>A List of LUIS apps</returns>
         public async Task<IReadOnlyCollection<LuisApp>> GetAllAppsAsync()
         {
-            var response = await Get($"/apps");
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<IReadOnlyCollection<LuisApp>>(content);
-            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
-            {
-                var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                throw new Exception($"{exception.Error.Code} - {exception.Error.Message}");
-            }
-            return null;
+            IReadOnlyCollection<LuisApp> apps = Array.Empty<LuisApp>();
+            var response = await Get($"apps");
+            if (response != null)
+                apps = JsonConvert.DeserializeObject<IReadOnlyCollection<LuisApp>>(response);
+            return apps;
         }
 
         /// <summary>
@@ -34,16 +29,8 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>LUIS app</returns>
         public async Task<LuisApp> GetAppByIdAsync(string id)
         {
-            var response = await Get($"/apps/{id}");
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<LuisApp>(content);
-            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
-            {
-                var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                throw new Exception($"{exception.Error.Code} - {exception.Error.Message}");
-            }
-            return null;
+            var response = await Get($"apps/{id}");
+            return JsonConvert.DeserializeObject<LuisApp>(response);
         }
 
         /// <summary>
@@ -78,7 +65,7 @@ namespace Cognitive.LUIS.Programmatic
                 domain = domain,
                 initialVersionId = initialVersionId
             };
-            var response = await Post($"/apps", app);
+            var response = await Post($"apps", app);
             return JsonConvert.DeserializeObject<string>(response);
         }
 
@@ -96,7 +83,7 @@ namespace Cognitive.LUIS.Programmatic
                 name = name,
                 description = description
             };
-            await Put($"/apps/{id}", app);
+            await Put($"apps/{id}", app);
         }
 
         /// <summary>
@@ -106,7 +93,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns></returns>
         public async Task DeleteAppAsync(string id)
         {
-            await Delete($"/apps/{id}");
+            await Delete($"apps/{id}");
         }
     }
 }

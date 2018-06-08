@@ -17,16 +17,11 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>A List of app entities</returns>
         public async Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId)
         {
-            var response = await Get($"/apps/{appId}/versions/{appVersionId}/entities");
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<IReadOnlyCollection<Entity>>(content);
-            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
-            {
-                var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                throw new Exception($"{ exception.Error.Code} - { exception.Error.Message}");
-            }
-            return null;
+            IReadOnlyCollection<Entity> entities = Array.Empty<Entity>();
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/entities");
+            if (response != null)
+                entities = JsonConvert.DeserializeObject<IReadOnlyCollection<Entity>>(response);
+            return entities;
         }
 
         /// <summary>
@@ -38,16 +33,8 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>app entity</returns>
         public async Task<Entity> GetEntityByIdAsync(string id, string appId, string appVersionId)
         {
-            var response = await Get($"/apps/{appId}/versions/{appVersionId}/entities/{id}");
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<Entity>(content);
-            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
-            {
-                var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                throw new Exception($"{ exception.Error.Code} - { exception.Error.Message}");
-            }
-            return null;
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/entities/{id}");
+            return JsonConvert.DeserializeObject<Entity>(response);
         }
 
         /// <summary>
@@ -76,7 +63,7 @@ namespace Cognitive.LUIS.Programmatic
             {
                 name = name
             };
-            var response = await Post($"/apps/{appId}/versions/{appVersionId}/entities", Entity);
+            var response = await Post($"apps/{appId}/versions/{appVersionId}/entities", Entity);
             return JsonConvert.DeserializeObject<string>(response);
         }
 
@@ -94,7 +81,7 @@ namespace Cognitive.LUIS.Programmatic
             {
                 name = name
             };
-            await Put($"/apps/{appId}/versions/{appVersionId}/entities/{id}", entity);
+            await Put($"apps/{appId}/versions/{appVersionId}/entities/{id}", entity);
         }
 
         /// <summary>
@@ -106,7 +93,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns></returns>
         public async Task DeleteEntityAsync(string id, string appId, string appVersionId)
         {
-            await Delete($"/apps/{appId}/versions/{appVersionId}/entities/{id}");
+            await Delete($"apps/{appId}/versions/{appVersionId}/entities/{id}");
         }
     }
 }

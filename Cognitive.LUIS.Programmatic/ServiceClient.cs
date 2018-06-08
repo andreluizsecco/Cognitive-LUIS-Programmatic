@@ -15,12 +15,23 @@ namespace Cognitive.LUIS.Programmatic
 
         public ServiceClient(string subscriptionKey, Location location)
         {
-            var baseUrl = $"https://{location.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0";
+            var baseUrl = $"https://{location.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0/";
             _client = HttpClientFactory.Create(baseUrl, subscriptionKey);
         }
 
-        protected async Task<HttpResponseMessage> Get(string path) =>
-            await _client.GetAsync(path);
+        protected async Task<string> Get(string path)
+        {
+            var response = await _client.GetAsync(path);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+                return responseContent;
+            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
+            {
+                var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
+                throw new Exception($"{exception.Error.Code} - {exception.Error.Message}");
+            }
+            return null;
+        }
 
         protected async Task<string> Post(string path)
         {

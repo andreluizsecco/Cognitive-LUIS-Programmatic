@@ -17,16 +17,11 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>A List of app intents</returns>
         public async Task<IReadOnlyCollection<Intent>> GetAllIntentsAsync(string appId, string appVersionId)
         {
-            var response = await Get($"/apps/{appId}/versions/{appVersionId}/intents");
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<IReadOnlyCollection<Intent>>(content);
-            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
-            {
-                var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                throw new Exception($"{ exception.Error.Code} - { exception.Error.Message}");
-            }
-            return null;
+            IReadOnlyCollection<Intent> intents = Array.Empty<Intent>();
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/intents");
+            if (response != null)
+                intents = JsonConvert.DeserializeObject<IReadOnlyCollection<Intent>>(response);
+            return intents;
         }
 
         /// <summary>
@@ -38,16 +33,8 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>app intent</returns>
         public async Task<Intent> GetIntentByIdAsync(string id, string appId, string appVersionId)
         {
-            var response = await Get($"/apps/{appId}/versions/{appVersionId}/intents/{id}");
-            var content = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-                return JsonConvert.DeserializeObject<Intent>(content);
-            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
-            {
-                var exception = JsonConvert.DeserializeObject<ServiceException>(content);
-                throw new Exception($"{ exception.Error.Code} - { exception.Error.Message}");
-            }
-            return null;
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/intents/{id}");
+            return JsonConvert.DeserializeObject<Intent>(response);
         }
 
         /// <summary>
@@ -79,7 +66,7 @@ namespace Cognitive.LUIS.Programmatic
             {
                 name = name
             };
-            var response = await Post($"/apps/{appId}/versions/{appVersionId}/intents", intent);
+            var response = await Post($"apps/{appId}/versions/{appVersionId}/intents", intent);
             return JsonConvert.DeserializeObject<string>(response);
         }
 
@@ -97,7 +84,7 @@ namespace Cognitive.LUIS.Programmatic
             {
                 name = name
             };
-            await Put($"/apps/{appId}/versions/{appVersionId}/intents/{id}", intent);
+            await Put($"apps/{appId}/versions/{appVersionId}/intents/{id}", intent);
         }
 
         /// <summary>
@@ -110,6 +97,6 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="deleteUtterances">delete utterances flag. Optional paramater with default value 'false'.</param>
         /// <returns></returns>
         public async Task DeleteIntentAsync(string id, string appId, string appVersionId, bool deleteUtterances = false) =>
-            await Delete($"/apps/{appId}/versions/{appVersionId}/intents/{id}?deleteUtterances={deleteUtterances}");
+            await Delete($"apps/{appId}/versions/{appVersionId}/intents/{id}?deleteUtterances={deleteUtterances}");
     }
 }

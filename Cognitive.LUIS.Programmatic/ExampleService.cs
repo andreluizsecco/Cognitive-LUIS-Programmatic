@@ -15,7 +15,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns>A object of utterance created</returns>
         public async Task<Utterance> AddExampleAsync(string appId, string appVersionId, Example model)
         {
-            var response = await Post($"/apps/{appId}/versions/{appVersionId}/example", model);
+            var response = await Post($"apps/{appId}/versions/{appVersionId}/example", model);
             return JsonConvert.DeserializeObject<Utterance>(response);
         }
 
@@ -30,7 +30,7 @@ namespace Cognitive.LUIS.Programmatic
         {
             if (models.Length < 100)
             {
-                var response = await Post($"/apps/{appId}/versions/{appVersionId}/examples", models);
+                var response = await Post($"apps/{appId}/versions/{appVersionId}/examples", models);
                 return JsonConvert.DeserializeObject<BatchExample[]>(response);
             }
 
@@ -46,7 +46,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns></returns>
         public async Task DeleteExampleAsync(string appId, string appVersionId, string exampleId)
         {
-            await Delete($"/apps/{appId}/versions/{appVersionId}/examples/{exampleId}");
+            await Delete($"apps/{appId}/versions/{appVersionId}/examples/{exampleId}");
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Cognitive.LUIS.Programmatic
                 isStaging = isStaging.ToString(),
                 region = region
             };
-            var response = await Post($"/apps/{appId}/publish", model);
+            var response = await Post($"apps/{appId}/publish", model);
             return JsonConvert.DeserializeObject<Publish>(response);
         }
     }
