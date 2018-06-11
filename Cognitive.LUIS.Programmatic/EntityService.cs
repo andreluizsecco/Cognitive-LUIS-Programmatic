@@ -14,6 +14,8 @@ namespace Cognitive.LUIS.Programmatic
         /// </summary>
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
+        /// <param name="skip">the number of entries to skip. Default value is 0</param>
+        /// <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
         /// <returns>A List of app entities</returns>
         public async Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {

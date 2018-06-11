@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
@@ -7,6 +8,23 @@ namespace Cognitive.LUIS.Programmatic
 {
     public partial class LuisProgClient : IExampleService
     {
+        /// <summary>
+        /// Gets examples to be reviewed.
+        /// </summary>
+        /// <param name="appId">app id</param>
+        /// <param name="appVersionId">app version</param>
+        /// <param name="skip">the number of entries to skip. Default value is 0</param>
+        /// <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+        /// <returns>A list of examples to be reviewed</returns>
+        public async Task<IReadOnlyCollection<ReviewExample>> GetAllLabeledExamplesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
+        {
+            IReadOnlyCollection<ReviewExample> examples = Array.Empty<ReviewExample>();
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/examples?skip={skip}&take={take}");
+            if (response != null)
+                examples = JsonConvert.DeserializeObject<IReadOnlyCollection<ReviewExample>>(response);
+            return examples;
+        }
+
         /// <summary>
         /// Adds a labeled example to the application
         /// </summary>
@@ -29,7 +47,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <returns></returns>
         public async Task<BatchExample[]> AddBatchExampleAsync(string appId, string appVersionId, Example[] models)
         {
-            if (models.Length < 100)
+            if (models.Length <= 100)
             {
                 var response = await Post($"apps/{appId}/versions/{appVersionId}/examples", models);
                 return JsonConvert.DeserializeObject<BatchExample[]>(response);

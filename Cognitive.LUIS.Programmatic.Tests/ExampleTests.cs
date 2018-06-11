@@ -24,6 +24,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [TestMethod]
+        public async Task ShouldGetLabeledExamplesList()
+        {
+            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var examples = await client.GetAllLabeledExamplesAsync(_appId, "1.0");
+            Assert.IsInstanceOfType(examples, typeof(IEnumerable<ReviewExample>));
+        }
+
+        [TestMethod]
         public async Task ShouldAddExample()
         {
             var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
