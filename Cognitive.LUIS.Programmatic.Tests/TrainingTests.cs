@@ -9,7 +9,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
     [TestClass]
     public class TrainingTests
     {
-        private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
+        private const string SUBSCRIPTION_KEY = "72a107783ba845b39e2678d64d3a31a4";
         private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
@@ -52,10 +52,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [TestMethod]
-        public async Task ShouldSendTrainAndGetCompletionStatus()
+        public async Task ShouldSendTrainAndGetFinalStatus()
         {
             var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
-            var trainingDetails = await client.TrainAndGetCompletionStatusAsync(_appId, "1.0");
+            var trainingDetails = await client.TrainAndGetFinalStatusAsync(_appId, "1.0");
 
             Assert.IsNotNull(trainingDetails);
         }

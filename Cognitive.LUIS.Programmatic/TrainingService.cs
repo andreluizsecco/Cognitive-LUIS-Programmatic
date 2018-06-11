@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
@@ -35,59 +36,40 @@ namespace Cognitive.LUIS.Programmatic
                 trainings = JsonConvert.DeserializeObject<IReadOnlyCollection<Training>>(response);
             return trainings;
         }
+        
         /// <summary>
         /// Requests train and wait till the training completes, returns the final status.
         /// </summary>
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
+        /// <param name="timeout">maximum wait time to return the final status (in seconds)</param>
         /// <returns>Training details object</returns>
-        public async Task<TrainingDetails> TrainAndGetCompletionStatusAsync(string appId, string appVersionId)
+        public async Task<TrainingDetails> TrainAndGetFinalStatusAsync(string appId, string appVersionId, int timeout = 60)
         {
             var response = await Post($"apps/{appId}/versions/{appVersionId}/train");
-
-            // Ignore the first response :TODO
-            TrainingDetails trainingDetails = JsonConvert.DeserializeObject<TrainingDetails>(response);
-
-            // if training status(2) is up to date return the final training status.
-            if (trainingDetails.StatusId.Equals(TrainingStatus.UpToDate))
-                return trainingDetails;
-
-            // else pool for status with max timeout 10 minutes
-            DateTime maximumWaitTime = DateTime.Now.AddMinutes(10);
-
-            IReadOnlyCollection<Training> trainingStatusList;
-            int pendingCount = int.MaxValue;
-
-            while ((pendingCount > 0) && (DateTime.Now < maximumWaitTime))
+            IEnumerable<Training> trainingStatusList = null;
+            var maximumWaitTime = DateTime.Now.AddSeconds(timeout);
+            
+            bool wait = true;
+            IEnumerable<TrainingStatus> statusList;
+            do
             {
-                // Sleep for 2 seconds
-                Thread.Sleep(2000);
-                pendingCount = 0;
+                if (DateTime.Now > maximumWaitTime)
+                    throw new Exception("Request timeout: LUIS application training is taking too long.");
+                    
+                response = await Get($"apps/{appId}/versions/{appVersionId}/train");
+                if (response != null)
+                    trainingStatusList = JsonConvert.DeserializeObject<IReadOnlyCollection<Training>>(response);
 
-                var trainStatusResponse = await Get($"apps/{appId}/versions/{appVersionId}/train");
-                if (trainStatusResponse != null)
-                {
-                    trainingStatusList = JsonConvert.DeserializeObject<IReadOnlyCollection<Training>>(trainStatusResponse);
-                    foreach (Training trainingStatus in trainingStatusList)
-                    {
-                        trainingDetails = trainingStatus.Details;
-                        switch ((TrainingStatus)trainingDetails.StatusId)
-                        {
-                            case TrainingStatus.InProgress:
-                            case TrainingStatus.Queued:
-                                pendingCount++;
-                                break;
-                            case TrainingStatus.Fail:
-                                return trainingDetails;
-                        }
-                    }
-                }
+                statusList = trainingStatusList.Select(x => (TrainingStatus)x.Details.StatusId);
+                wait = statusList.Any(x => (x == TrainingStatus.InProgress || x == TrainingStatus.Queued) && x != TrainingStatus.Fail);
+                
+                if (wait)
+                    Thread.Sleep(2000);
             }
+            while (wait);
 
-            if (pendingCount > 0)
-                throw new Exception("Request timeout: LUIS application training is taking too long.");
-
-            return trainingDetails;
+            return trainingStatusList.First().Details;
         }
     }
 }
