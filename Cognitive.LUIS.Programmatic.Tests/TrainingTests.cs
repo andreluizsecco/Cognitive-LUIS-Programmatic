@@ -9,7 +9,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
     [TestClass]
     public class TrainingTests
     {
-        private const string SUBSCRIPTION_KEY = "72a107783ba845b39e2678d64d3a31a4";
+        private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
         private const Location LOCATION = Location.WestUS;
         private readonly string _appId;
 
