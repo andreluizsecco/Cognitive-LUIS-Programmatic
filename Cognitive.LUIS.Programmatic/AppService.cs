@@ -13,10 +13,10 @@ namespace Cognitive.LUIS.Programmatic
         /// Lists all of the user applications
         /// </summary>
         /// <returns>A List of LUIS apps</returns>
-        public async Task<IReadOnlyCollection<LuisApp>> GetAllAppsAsync()
+        public async Task<IReadOnlyCollection<LuisApp>> GetAllAppsAsync(int skip = 0, int take = 100)
         {
             IReadOnlyCollection<LuisApp> apps = Array.Empty<LuisApp>();
-            var response = await Get($"apps");
+            var response = await Get($"apps?skip={skip}&take={take}");
             if (response != null)
                 apps = JsonConvert.DeserializeObject<IReadOnlyCollection<LuisApp>>(response);
             return apps;

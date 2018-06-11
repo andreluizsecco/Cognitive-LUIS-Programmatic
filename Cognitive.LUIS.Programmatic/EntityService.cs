@@ -15,10 +15,10 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>A List of app entities</returns>
-        public async Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId)
+        public async Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             IReadOnlyCollection<Entity> entities = Array.Empty<Entity>();
-            var response = await Get($"apps/{appId}/versions/{appVersionId}/entities");
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/entities?skip={skip}&take={take}");
             if (response != null)
                 entities = JsonConvert.DeserializeObject<IReadOnlyCollection<Entity>>(response);
             return entities;

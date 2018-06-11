@@ -15,7 +15,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>A List of app intents</returns>
-        public async Task<IReadOnlyCollection<Intent>> GetAllIntentsAsync(string appId, string appVersionId)
+        public async Task<IReadOnlyCollection<Intent>> GetAllIntentsAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             IReadOnlyCollection<Intent> intents = Array.Empty<Intent>();
             var response = await Get($"apps/{appId}/versions/{appVersionId}/intents");

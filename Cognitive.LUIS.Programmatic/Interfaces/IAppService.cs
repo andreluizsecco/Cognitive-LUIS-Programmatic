@@ -6,7 +6,7 @@ namespace Cognitive.LUIS.Programmatic
 {
     public interface IAppService
     {
-        Task<IReadOnlyCollection<LuisApp>> GetAllAppsAsync();
+        Task<IReadOnlyCollection<LuisApp>> GetAllAppsAsync(int skip, int take);
         Task<LuisApp> GetAppByIdAsync(string id);
         Task<LuisApp> GetAppByNameAsync(string name);
         Task<string> AddAppAsync(string name, string description, string culture, string usageScenario, string domain, string initialVersionId);
