@@ -13,9 +13,9 @@ namespace Cognitive.LUIS.Programmatic
     {
         private readonly HttpClient _client;
 
-        public ServiceClient(string subscriptionKey, Location location)
+        public ServiceClient(string subscriptionKey, Regions region)
         {
-            var baseUrl = $"https://{location.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0/";
+            var baseUrl = $"https://{region.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0/";
             _client = HttpClientFactory.Create(baseUrl, subscriptionKey);
         }
 

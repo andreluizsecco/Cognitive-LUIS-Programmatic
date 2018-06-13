@@ -12,7 +12,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <param name="isStaging"></param>
-        /// <param name="region">If the app is created in "westeurope", then the publish location is also "westeurope." For all other app locations, the publish location is "westus"</param>
+        /// <param name="region">The publish location is determined from the creation location. To publish to more than one region, the region properties should be a comma-separated list, "region": "westus, westeurope".</param>
         /// <returns>A object of publish details</returns>
         public async Task<Publish> PublishAsync(string appId, string appVersionId, bool isStaging, string region)
         {

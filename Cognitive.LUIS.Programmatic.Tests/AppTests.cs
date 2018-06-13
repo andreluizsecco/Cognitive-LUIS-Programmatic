@@ -8,15 +8,12 @@ using System.Threading.Tasks;
 namespace Cognitive.LUIS.Programmatic.Tests
 {
     [TestClass]
-    public class AppTests
+    public class AppTests : BaseTest
     {
-        private const string SUBSCRIPTION_KEY = "{YourSubscriptionKey}";
-        private const Location LOCATION = Location.WestUS;
-
         [TestMethod]
         public async Task ShouldGetAppList()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var apps = await client.GetAllAppsAsync();
             Assert.IsInstanceOfType(apps, typeof(IEnumerable<LuisApp>));
         }
@@ -24,7 +21,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetExistAppById()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var apps = await client.GetAllAppsAsync();
 
             var firstApp = apps.FirstOrDefault();
@@ -36,18 +33,18 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsAppId()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
 
-            var app = await client.GetAppByIdAsync("51593248-363e-4a08-b946-2061964dc690");
+            var app = await client.GetAppByIdAsync(InvalidId);
             Assert.IsNull(app);
         }
 
         [TestMethod]
         public async Task ShouldGetAppByName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             if (await client.GetAppByNameAsync("SDKTest") == null)
-                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0");
+                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
 
             var app = await client.GetAppByNameAsync("SDKTest");
             Assert.IsNotNull(app);
@@ -56,7 +53,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsAppName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var appTest = await client.GetAppByNameAsync("SDKTest");
             if (appTest != null)
                 await client.DeleteAppAsync(appTest.Id);
@@ -68,22 +65,22 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldAddNewAppSDKTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
 
             var appTest = await client.GetAppByNameAsync("SDKTest");
             if (appTest != null)
                 await client.DeleteAppAsync(appTest.Id);
 
-            var newId = await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0");
+            var newId = await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
             Assert.IsNotNull(newId);
         }
 
         [TestMethod]
         public async Task ShouldThrowExceptionOnAddNewAppSDKTestWhenAlreadyExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0"));
+                client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
 
             Assert.AreEqual(ex.Message, "An application with the same name already exists");
         }
@@ -91,13 +88,13 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldRenameAppSDKTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var app = await client.GetAppByNameAsync("SDKTest");
             var appChanged = await client.GetAppByNameAsync("SDKTestChanged");
 
             if (app == null)
             {
-                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0");
+                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
                 app = await client.GetAppByNameAsync("SDKTest");
             }
 
@@ -113,18 +110,18 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameAppSDKTestWhenExistsAppWithSameName()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var app = await client.GetAppByNameAsync("SDKTest");
             var appChanged = await client.GetAppByNameAsync("SDKTestChanged");
             string appChangedId = null;
 
             if (app == null)
             {
-                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0");
+                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
                 app = await client.GetAppByNameAsync("SDKTest");
             }
             if (appChanged == null)
-                appChangedId = await client.AddAppAsync("SDKTestChanged", "Description changed", "en-us", "SDKTest", string.Empty, "1.0");
+                appChangedId = await client.AddAppAsync("SDKTestChanged", "Description changed", "en-us", "SDKTest", string.Empty, appVersion);
 
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameAppAsync(app.Id, "SDKTestChanged", "Description changed"));
@@ -135,9 +132,9 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameAppSDKTestWhenNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                client.RenameAppAsync("51593248-363e-4a08-b946-2061964dc690", "SDKTest", "SDKTestChanged"));
+                client.RenameAppAsync(InvalidId, "SDKTest", "SDKTestChanged"));
 
             Assert.AreEqual(ex.Message, "Cannot find an application with the specified ID");
         }
@@ -145,9 +142,9 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldDeleteAppSDKTest()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             if (await client.GetAppByNameAsync("SDKTest") == null)
-                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, "1.0");
+                await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
 
             var app = await client.GetAppByNameAsync("SDKTest");
             await client.DeleteAppAsync(app.Id);
@@ -159,9 +156,9 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldThrowExceptionOnDeleteAppSDKTestWhenNotExists()
         {
-            var client = new LuisProgClient(SUBSCRIPTION_KEY, LOCATION);
+            var client = new LuisProgClient(SubscriptionKey, Region);
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() => 
-                client.DeleteAppAsync("51593248-363e-4a08-b946-2061964dc690"));
+                client.DeleteAppAsync(InvalidId));
 
             Assert.AreEqual(ex.Message, "Cannot find an application with the specified ID");
         }

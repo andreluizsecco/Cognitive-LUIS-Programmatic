@@ -2,6 +2,8 @@
 {
     public partial class LuisProgClient : ServiceClient
     {
-        public LuisProgClient(string subscriptionKey, Location location) : base(subscriptionKey, location) { }
+        /// <param name="subscriptionKey">LUIS Authoring Key</param>
+        /// <param name="region">Regions currently available in West US, West Europe and Australia East".</param>
+        public LuisProgClient(string subscriptionKey, Regions region) : base(subscriptionKey, region) { }
     }
 }
