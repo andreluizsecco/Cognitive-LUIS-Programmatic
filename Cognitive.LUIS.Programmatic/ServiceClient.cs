@@ -71,7 +71,7 @@ namespace Cognitive.LUIS.Programmatic
             if (!response.IsSuccessStatusCode)
             {
                 var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                throw new Exception($"{exception.Error.Code} - {exception.Error?.Message ?? exception.Message}");
+                throw new Exception(exception.ToString());
             }
             return responseContent;
         }

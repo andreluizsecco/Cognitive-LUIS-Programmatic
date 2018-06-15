@@ -13,9 +13,6 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public const string EntityName = "EntityTest";
         public const string EntityNameChanged = "EntityTestChanged";
 
-        public EntityTests() =>
-            CreateApp().Wait();
-
         [TestMethod]
         public async Task ShouldGetEntityList()
         {
@@ -173,6 +170,5 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
             Assert.AreEqual(ex.Message, "The specified model does not exist in the application");
         }
-
     }
 }

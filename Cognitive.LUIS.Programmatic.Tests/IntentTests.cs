@@ -13,9 +13,6 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public const string IntentName = "IntentTest";
         public const string IntentNameChanged = "IntentTestChanged";
 
-        public IntentTests() =>
-            CreateApp().Wait();
-
         [TestMethod]
         public async Task ShouldGetIntentList()
         {

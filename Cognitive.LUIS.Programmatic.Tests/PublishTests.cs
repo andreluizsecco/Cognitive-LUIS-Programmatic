@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 namespace Cognitive.LUIS.Programmatic.Tests
 {
     [TestClass]
-    public class PublishTests : BaseTest
+    public abstract class PublishTests : BaseTest
     {
         public PublishTests()
         {
-            Cleanup().Wait();
-            CreateApp().Wait();
+            Cleanup();
+            CreateApp();
         }
 
         [TestMethod]

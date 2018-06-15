@@ -9,8 +9,6 @@ namespace Cognitive.LUIS.Programmatic.Tests
     [TestClass]
     public class TrainingTests : BaseTest
     {
-        public TrainingTests() =>
-            CreateApp().Wait();
 
         [TestMethod]
         public async Task ShouldSendTrainingRequest()

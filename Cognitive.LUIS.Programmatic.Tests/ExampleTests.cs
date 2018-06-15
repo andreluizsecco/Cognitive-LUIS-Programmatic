@@ -11,9 +11,6 @@ namespace Cognitive.LUIS.Programmatic.Tests
     {
         public const string IntentName = "IntentTest";
 
-        public ExampleTests() =>
-            CreateApp().Wait();
-
         [TestMethod]
         public async Task ShouldGetLabeledExamplesList()
         {

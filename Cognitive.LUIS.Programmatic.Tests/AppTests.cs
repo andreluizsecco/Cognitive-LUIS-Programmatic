@@ -82,7 +82,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
 
-            Assert.AreEqual(ex.Message, "An application with the same name already exists");
+            Assert.AreEqual(ex.Message, "BadArgument - SDKTest already exists.");
         }
 
         [TestMethod]
@@ -126,7 +126,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameAppAsync(app.Id, "SDKTestChanged", "Description changed"));
 
-            Assert.AreEqual(ex.Message, "An application with the same name already exists");
+            Assert.AreEqual(ex.Message, "BadArgument - SDKTestChanged already exists.");
         }
 
         [TestMethod]
@@ -136,7 +136,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameAppAsync(InvalidId, "SDKTest", "SDKTestChanged"));
 
-            Assert.AreEqual(ex.Message, "Cannot find an application with the specified ID");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
         }
 
         [TestMethod]
@@ -160,7 +160,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() => 
                 client.DeleteAppAsync(InvalidId));
 
-            Assert.AreEqual(ex.Message, "Cannot find an application with the specified ID");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
         }
     }
 }
