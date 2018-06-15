@@ -8,13 +8,15 @@ using System.Threading.Tasks;
 namespace Cognitive.LUIS.Programmatic.Tests
 {
     [TestClass]
-    public abstract class PublishTests : BaseTest
+    public class PublishTests : BaseTest
     {
-        public PublishTests()
-        {
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context) =>
+            Initialize();
+
+        [ClassCleanup]
+        public static void ClassCleanup() =>
             Cleanup();
-            CreateApp();
-        }
 
         [TestMethod]
         public async Task ShouldSendPublishRequest()
@@ -48,7 +50,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.PublishAsync(InvalidId, appVersion, false, "westus"));
 
-            Assert.AreEqual(ex.Message, "Cannot find an application with the specified ID");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
         }
     }
 }

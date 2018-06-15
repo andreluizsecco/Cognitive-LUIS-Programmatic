@@ -13,6 +13,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public const string IntentName = "IntentTest";
         public const string IntentNameChanged = "IntentTestChanged";
 
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context) =>
+            Initialize();
+
+        [ClassCleanup]
+        public static void ClassCleanup() =>
+            Cleanup();
+
         [TestMethod]
         public async Task ShouldGetIntentList()
         {
@@ -82,10 +90,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public async Task ShouldThrowExceptionOnIntentNewIntentTestWhenAlreadyExists()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
+            var intentTest = await client.GetIntentByNameAsync(IntentName, appId, appVersion);
+            if (intentTest == null)
+                await client.AddIntentAsync(IntentName, appId, appVersion);
+
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.AddIntentAsync(IntentName, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "An intent classifier with the same name already exists");
+            Assert.AreEqual(ex.Message, "BadArgument - The models: { IntentTest } already exist in the specified application version.");
         }
 
         [TestMethod]
@@ -129,7 +141,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameIntentAsync(intent.Id, IntentNameChanged, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "The application already contains an intent classifier with the same name");
+            Assert.AreEqual(ex.Message, "BadArgument - The models: { IntentTestChanged } already exist in the specified application version.");
         }
 
         [TestMethod]
@@ -139,7 +151,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameIntentAsync(InvalidId, IntentName, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "The specified model does not exist in the specified application.");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
         }
 
         [TestMethod]
@@ -190,7 +202,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.DeleteIntentAsync(InvalidId, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "The specified model does not exist in the application");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
         }
     }
 }

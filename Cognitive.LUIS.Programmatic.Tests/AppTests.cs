@@ -10,6 +10,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
     [TestClass]
     public class AppTests : BaseTest
     {
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context) =>
+            Initialize();
+
+        [ClassCleanup]
+        public static void ClassCleanup() =>
+            Cleanup();
+            
         [TestMethod]
         public async Task ShouldGetAppList()
         {
@@ -148,9 +156,9 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
             var app = await client.GetAppByNameAsync("SDKTest");
             await client.DeleteAppAsync(app.Id);
-            app = await client.GetAppByIdAsync(app.Id);
+            var newapp = await client.GetAppByIdAsync(app.Id);
 
-            Assert.IsNull(app);
+            Assert.IsNull(newapp);
         }
 
         [TestMethod]

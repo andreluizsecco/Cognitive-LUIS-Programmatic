@@ -13,6 +13,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public const string EntityName = "EntityTest";
         public const string EntityNameChanged = "EntityTestChanged";
 
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context) =>
+            Initialize();
+
+        [ClassCleanup]
+        public static void ClassCleanup() =>
+            Cleanup();
+
         [TestMethod]
         public async Task ShouldGetEntityList()
         {
@@ -87,10 +95,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
         public async Task ShouldThrowExceptionOnEntityNewEntityTestWhenAlreadyExists()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
+            var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+            if (entityTest == null)
+                await client.AddEntityAsync(EntityName, appId, appVersion);
+
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.AddEntityAsync(EntityName, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "An entity extractor with the name EntityTest already exists in the application");
+            Assert.AreEqual(ex.Message, "BadArgument - The models: { EntityTest } already exist in the specified application version.");
         }
 
         [TestMethod]
@@ -134,7 +146,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "The application already contains an entity extractor with the same name");
+            Assert.AreEqual(ex.Message, "BadArgument - The models: { EntityTestChanged } already exist in the specified application version.");
         }
 
         [TestMethod]
@@ -144,7 +156,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.RenameEntityAsync(InvalidId, EntityName, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "The specified model does not exist in the specified application.");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
         }
 
         [TestMethod]
@@ -168,7 +180,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.DeleteEntityAsync(InvalidId, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "The specified model does not exist in the application");
+            Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
         }
     }
 }

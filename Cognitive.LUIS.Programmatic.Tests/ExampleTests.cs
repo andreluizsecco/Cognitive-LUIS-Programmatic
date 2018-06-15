@@ -11,6 +11,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
     {
         public const string IntentName = "IntentTest";
 
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext context) =>
+            Initialize();
+
+        [ClassCleanup]
+        public static void ClassCleanup() =>
+            Cleanup();
+
         [TestMethod]
         public async Task ShouldGetLabeledExamplesList()
         {
@@ -165,7 +173,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                 client.AddExampleAsync(appId, appVersion, example));
 
-            Assert.AreEqual(ex.Message, "The intent classifier IntentTest does not exist in the selected application");
+            Assert.AreEqual(ex.Message, "BadArgument - The intent classifier IntentTest does not exist in the application version.");
         }
     }
 }

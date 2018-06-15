@@ -36,7 +36,9 @@ namespace Cognitive.LUIS.Programmatic
         public async Task<Intent> GetIntentByIdAsync(string id, string appId, string appVersionId)
         {
             var response = await Get($"apps/{appId}/versions/{appVersionId}/intents/{id}");
-            return JsonConvert.DeserializeObject<Intent>(response);
+            if (response != null)
+                return JsonConvert.DeserializeObject<Intent>(response);
+            return null;
         }
 
         /// <summary>

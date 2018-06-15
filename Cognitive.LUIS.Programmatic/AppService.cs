@@ -32,7 +32,9 @@ namespace Cognitive.LUIS.Programmatic
         public async Task<LuisApp> GetAppByIdAsync(string id)
         {
             var response = await Get($"apps/{id}");
-            return JsonConvert.DeserializeObject<LuisApp>(response);
+            if (response != null)
+                return JsonConvert.DeserializeObject<LuisApp>(response);
+            return null;
         }
 
         /// <summary>

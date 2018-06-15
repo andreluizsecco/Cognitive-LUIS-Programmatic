@@ -36,7 +36,9 @@ namespace Cognitive.LUIS.Programmatic
         public async Task<Entity> GetEntityByIdAsync(string id, string appId, string appVersionId)
         {
             var response = await Get($"apps/{appId}/versions/{appVersionId}/entities/{id}");
-            return JsonConvert.DeserializeObject<Entity>(response);
+            if (response != null)
+                return JsonConvert.DeserializeObject<Entity>(response);
+            return null;
         }
 
         /// <summary>
