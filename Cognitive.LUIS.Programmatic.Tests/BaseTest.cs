@@ -27,6 +27,9 @@ namespace Cognitive.LUIS.Programmatic.Tests
             var app = client.GetAppByNameAsync("SDKTest").Result;
             if (app != null)
                 client.DeleteAppAsync(app.Id).Wait();
+            app = client.GetAppByNameAsync("SDKTestChanged").Result;
+            if (app != null)
+                client.DeleteAppAsync(app.Id).Wait();
             appId = null;
         }
     }
