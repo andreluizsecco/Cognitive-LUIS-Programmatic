@@ -24,163 +24,185 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldGetEntityList()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var entities = await client.GetAllEntitiesAsync(appId, appVersion);
-            Assert.IsInstanceOfType(entities, typeof(IEnumerable<Entity>));
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                Assert.IsInstanceOfType(entities, typeof(IEnumerable<Entity>));
+            }
         }
 
         [TestMethod]
         public async Task ShouldGetExistEntityById()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var entities = await client.GetAllEntitiesAsync(appId, appVersion);
-            if (entities.Count == 0)
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                await client.AddEntityAsync(EntityName, appId, appVersion);
-                entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                var entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                if (entities.Count == 0)
+                {
+                    await client.AddEntityAsync(EntityName, appId, appVersion);
+                    entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                }
+
+                var firstEntity = entities.FirstOrDefault();
+
+                var entity = await client.GetEntityByIdAsync(firstEntity.Id, appId, appVersion);
+                Assert.AreEqual(firstEntity.Name, entity.Name);
             }
-
-            var firstEntity = entities.FirstOrDefault();
-
-            var entity = await client.GetEntityByIdAsync(firstEntity.Id, appId, appVersion);
-            Assert.AreEqual(firstEntity.Name, entity.Name);
         }
 
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsEntityId()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-
-            var entity = await client.GetEntityByIdAsync(InvalidId, appId, appVersion);
-            Assert.IsNull(entity);
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entity = await client.GetEntityByIdAsync(InvalidId, appId, appVersion);
+                Assert.IsNull(entity);
+            }
         }
 
         [TestMethod]
         public async Task ShouldGetEntityByName()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            if (await client.GetEntityByNameAsync(EntityName, appId, appVersion) == null)
-                await client.AddEntityAsync(EntityName, appId, appVersion);
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                if (await client.GetEntityByNameAsync(EntityName, appId, appVersion) == null)
+                    await client.AddEntityAsync(EntityName, appId, appVersion);
 
-            var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            Assert.IsNotNull(entity);
+                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                Assert.IsNotNull(entity);
+            }
         }
 
         [TestMethod]
         public async Task ShouldGetNullWhenNotExistsEntityName()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            if (entityTest != null)
-                await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
 
-            var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            Assert.IsNull(entity);
+                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                Assert.IsNull(entity);
+            }
         }
 
         [TestMethod]
         public async Task ShouldAddNewEntityTest()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
 
-            var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            if (entityTest != null)
-                await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
-
-            var newId = await client.AddEntityAsync(EntityName, appId, appVersion);
-            Assert.IsNotNull(newId);
+                var newId = await client.AddEntityAsync(EntityName, appId, appVersion);
+                Assert.IsNotNull(newId);
+            }
         }
 
         [TestMethod]
         public async Task ShouldThrowExceptionOnEntityNewEntityTestWhenAlreadyExists()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            if (entityTest == null)
-                await client.AddEntityAsync(EntityName, appId, appVersion);
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                if (entityTest == null)
+                    await client.AddEntityAsync(EntityName, appId, appVersion);
 
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                client.AddEntityAsync(EntityName, appId, appVersion));
+                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                    client.AddEntityAsync(EntityName, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "BadArgument - The models: { EntityTest } already exist in the specified application version.");
+                Assert.AreEqual(ex.Message, "BadArgument - The models: { EntityTest } already exist in the specified application version.");
+            }
         }
 
         [TestMethod]
         public async Task ShouldRenameEntityTest()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            var entityChanged = await client.GetEntityByNameAsync(EntityNameChanged, appId, appVersion);
-
-            if (entity == null)
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                await client.AddEntityAsync(EntityName, appId, appVersion);
-                entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entityChanged = await client.GetEntityByNameAsync(EntityNameChanged, appId, appVersion);
+
+                if (entity == null)
+                {
+                    await client.AddEntityAsync(EntityName, appId, appVersion);
+                    entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                }
+
+                if (entityChanged != null)
+                    await client.DeleteEntityAsync(entityChanged.Id, appId, appVersion);
+
+                await client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion);
+
+                entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
+                Assert.AreEqual(EntityNameChanged, entity.Name);
             }
-
-            if (entityChanged != null)
-                await client.DeleteEntityAsync(entityChanged.Id, appId, appVersion);
-
-            await client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion);
-
-            entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
-            Assert.AreEqual(EntityNameChanged, entity.Name);
         }
 
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameEntityTestWhenExistsEntityWithSameName()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            var entityChanged = await client.GetEntityByNameAsync(EntityNameChanged, appId, appVersion);
-            string entityChangedId = null;
-
-            if (entity == null)
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                await client.AddEntityAsync(EntityName, appId, appVersion);
-                entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entityChanged = await client.GetEntityByNameAsync(EntityNameChanged, appId, appVersion);
+                string entityChangedId = null;
+
+                if (entity == null)
+                {
+                    await client.AddEntityAsync(EntityName, appId, appVersion);
+                    entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                }
+                if (entityChanged == null)
+                    entityChangedId = await client.AddEntityAsync(EntityNameChanged, appId, appVersion);
+
+                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                    client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion));
+
+                Assert.AreEqual(ex.Message, "BadArgument - The models: { EntityTestChanged } already exist in the specified application version.");
             }
-            if (entityChanged == null)
-                entityChangedId = await client.AddEntityAsync(EntityNameChanged, appId, appVersion);
-
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion));
-
-            Assert.AreEqual(ex.Message, "BadArgument - The models: { EntityTestChanged } already exist in the specified application version.");
         }
 
         [TestMethod]
         public async Task ShouldThrowExceptionOnRenameEntityTestWhenNotExists()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                client.RenameEntityAsync(InvalidId, EntityName, appId, appVersion));
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                    client.RenameEntityAsync(InvalidId, EntityName, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
+                Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
+            }
         }
 
         [TestMethod]
         public async Task ShouldDeleteEntityTest()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            if (await client.GetEntityByNameAsync(EntityName, appId, appVersion) == null)
-                await client.AddEntityAsync(EntityName, appId, appVersion);
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                if (await client.GetEntityByNameAsync(EntityName, appId, appVersion) == null)
+                    await client.AddEntityAsync(EntityName, appId, appVersion);
 
-            var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-            await client.DeleteEntityAsync(entity.Id, appId, appVersion);
-            entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
+                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                await client.DeleteEntityAsync(entity.Id, appId, appVersion);
+                entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
 
-            Assert.IsNull(entity);
+                Assert.IsNull(entity);
+            }
         }
 
         [TestMethod]
         public async Task ShouldThrowExceptionOnDeleteEntityTestWhenNotExists()
         {
-            var client = new LuisProgClient(SubscriptionKey, Region);
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                client.DeleteEntityAsync(InvalidId, appId, appVersion));
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                    client.DeleteEntityAsync(InvalidId, appId, appVersion));
 
-            Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
+                Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
+            }
         }
     }
 }

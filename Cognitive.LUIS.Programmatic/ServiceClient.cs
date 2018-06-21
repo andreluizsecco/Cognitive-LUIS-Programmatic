@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic
 {
-    public class ServiceClient
+    public class ServiceClient : IDisposable
     {
         private readonly HttpClient _client;
 
@@ -82,5 +82,8 @@ namespace Cognitive.LUIS.Programmatic
             var body = JsonConvert.SerializeObject(requestBody, settings);
             return Encoding.UTF8.GetBytes(body);
         }
+
+        public void Dispose() =>
+            _client.Dispose();
     }
 }
