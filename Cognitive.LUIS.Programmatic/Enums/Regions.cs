@@ -1,6 +1,6 @@
 ﻿namespace Cognitive.LUIS.Programmatic
 {
-    public enum Location
+    public enum Regions
     {
         WestUS,
         WestEurope,

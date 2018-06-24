@@ -8,11 +8,4 @@ namespace Cognitive.LUIS.Programmatic.Models
         public string IntentName { get; set; }
         public IEnumerable<EntityLabel> EntityLabels { get; set; }
     }
-
-    public class EntityLabel
-    {
-        public string EntityName { get; set; }
-        public int StartCharIndex { get; set; }
-        public int EndCharIndex { get; set; }
-    }
 }

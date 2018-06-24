@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Cognitive.LUIS.Programmatic.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Net.Http;
@@ -8,96 +9,71 @@ using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic
 {
-    public class ServiceClient
+    public class ServiceClient : IDisposable
     {
-        private readonly string _baseUrl;
-        private readonly string _subscriptionKey;
+        private readonly HttpClient _client;
 
-        public ServiceClient(string subscriptionKey, Location location)
+        public ServiceClient(string subscriptionKey, Regions region)
         {
-            _subscriptionKey = subscriptionKey;
-            _baseUrl = $"https://{location.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0";
+            var baseUrl = $"https://{region.ToString().ToLower()}.api.cognitive.microsoft.com/luis/api/v2.0/";
+            _client = HttpClientFactory.Create(baseUrl, subscriptionKey);
         }
 
-        protected async Task<HttpResponseMessage> Get(string path)
+        protected async Task<string> Get(string path)
         {
-            using (var client = new HttpClient())
+            var response = await _client.GetAsync(path);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+                return responseContent;
+            else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
             {
-                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                return await client.GetAsync($"{_baseUrl}{path}");
+                var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
+                throw new Exception($"{exception.Error.Code} - {exception.Error?.Message ?? exception.Message}");
             }
+            return null;
         }
 
         protected async Task<string> Post(string path)
         {
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                var response = await client.PostAsync($"{_baseUrl}{path}", null);
-                var responseContent = await response.Content.ReadAsStringAsync();
-                if (response.IsSuccessStatusCode)
-                    return responseContent;
-                else
-                {
-                    var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                    throw new Exception($"{exception.Error?.Message ?? exception.Message}");
-                }
-            }
+            var response = await _client.PostAsync(path, null);
+            return await GetResponseContent(response);
         }
 
         protected async Task<string> Post<TRequest>(string path, TRequest requestBody)
         {
-            using (var client = new HttpClient())
+            using (var content = new ByteArrayContent(GetByteData(requestBody)))
             {
-                using (var content = new ByteArrayContent(GetByteData(requestBody)))
-                {
-                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    var response = await client.PostAsync($"{_baseUrl}{path}", content);
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    if (response.IsSuccessStatusCode)
-                        return responseContent;
-                    else
-                    {
-                        var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                        throw new Exception($"{exception.Error?.Message ?? exception.Message}");
-                    }
-                }
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await _client.PostAsync(path, content);
+                return await GetResponseContent(response);
             }
         }
 
         protected async Task Put<TRequest>(string path, TRequest requestBody)
         {
-            using (var client = new HttpClient())
+            using (var content = new ByteArrayContent(GetByteData(requestBody)))
             {
-                using (var content = new ByteArrayContent(GetByteData(requestBody)))
-                {
-                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    var response = await client.PutAsync($"{_baseUrl}{path}", content);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                        throw new Exception($"{exception.Error?.Message ?? exception.Message}");
-                    }
-                }
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                var response = await _client.PutAsync(path, content);
+                await GetResponseContent(response);
             }
         }
 
         protected async Task Delete(string path)
         {
-            using (var client = new HttpClient())
+            var response = await _client.DeleteAsync(path);
+            await GetResponseContent(response);
+        }
+
+        private async Task<string> GetResponseContent(HttpResponseMessage response)
+        {
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
             {
-                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                var response = await client.DeleteAsync($"{_baseUrl}{path}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                    throw new Exception($"{exception.Error?.Message ?? exception.Message}");
-                }
+                var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
+                throw new Exception(exception.ToString());
             }
+            return responseContent;
         }
 
         private byte[] GetByteData<TRequest>(TRequest requestBody)
@@ -106,5 +82,8 @@ namespace Cognitive.LUIS.Programmatic
             var body = JsonConvert.SerializeObject(requestBody, settings);
             return Encoding.UTF8.GetBytes(body);
         }
+
+        public void Dispose() =>
+            _client.Dispose();
     }
 }
