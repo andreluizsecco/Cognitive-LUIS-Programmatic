@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -16,22 +16,16 @@
     <RootNamespace>Cognitive.LUIS.Programmatic</RootNamespace>
     <Version>1.1.0</Version>
     <RepositoryUrl>https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic</RepositoryUrl>
+    <DebugType>Full</DebugType>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\Cognitive.LUIS.Programmatic.xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Remove="Enums\TrainingStatus.cs.orig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
 </Project>

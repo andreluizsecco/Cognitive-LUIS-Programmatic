@@ -1,6 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace Cognitive.LUIS.Programmatic.Tests
 {
     public class BaseTest

@@ -108,7 +108,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.AddIntentAsync(IntentName, appId, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - The models: { IntentTest } already exist in the specified application version.");
+                Assert.AreEqual("BadArgument - The models: { IntentTest } already exist in the specified application version.", ex.Message);
             }
         }
 
@@ -156,7 +156,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.RenameIntentAsync(intent.Id, IntentNameChanged, appId, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - The models: { IntentTestChanged } already exist in the specified application version.");
+                Assert.AreEqual("BadArgument - The models: { IntentTestChanged } already exist in the specified application version.", ex.Message);
             }
         }
 
@@ -168,7 +168,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.RenameIntentAsync(InvalidId, IntentName, appId, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
+                Assert.AreEqual("BadArgument - Cannot find the input model in the specified application version.", ex.Message);
             }
         }
 
@@ -225,7 +225,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.DeleteIntentAsync(InvalidId, appId, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find the input model in the specified application version.");
+                Assert.AreEqual("BadArgument - Cannot find the input model in the specified application version.", ex.Message);
             }
         }
     }

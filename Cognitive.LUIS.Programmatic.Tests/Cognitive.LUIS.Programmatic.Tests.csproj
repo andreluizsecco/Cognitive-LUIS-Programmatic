@@ -1,24 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
-    <None Remove="ExampleTests.cs.orig" />
-    <None Remove="IntentTests.cs.orig" />
-    <None Remove="PublishTests.cs.orig" />
-    <None Remove="TrainingTests.cs.orig" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.1.18" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.1.18" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Cognitive.LUIS.Programmatic\Cognitive.LUIS.Programmatic.csproj" />
   </ItemGroup>

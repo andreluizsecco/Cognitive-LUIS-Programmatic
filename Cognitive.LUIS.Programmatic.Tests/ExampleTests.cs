@@ -108,7 +108,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var addExamples = await client.AddBatchExampleAsync(appId, appVersion, examples.ToArray());
 
-                Assert.AreEqual<int>(2, addExamples.Length);
+                Assert.AreEqual(2, addExamples.Length);
             }
         }
 
@@ -159,8 +159,8 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var addExamples = await client.AddBatchExampleAsync(appId, appVersion, examples.ToArray());
 
-                Assert.AreEqual<bool>(false, addExamples[0].HasError);
-                Assert.AreEqual<bool>(false, addExamples[1].HasError);
+                Assert.AreEqual(false, addExamples[0].HasError);
+                Assert.AreEqual(false, addExamples[1].HasError);
             }
         }
 
@@ -182,7 +182,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.AddExampleAsync(appId, appVersion, example));
 
-                Assert.AreEqual(ex.Message, "BadArgument - The intent classifier IntentTest does not exist in the application version.");
+                Assert.AreEqual("BadArgument - The intent classifier IntentTest does not exist in the application version.", ex.Message);
             }
         }
     }

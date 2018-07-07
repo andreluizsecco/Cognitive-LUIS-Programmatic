@@ -1,8 +1,6 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Cognitive.LUIS.Programmatic.Tests
@@ -21,8 +19,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         [TestMethod]
         public async Task ShouldSendPublishRequest()
         {
-            IEnumerable<Training> trainingList;
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 await client.AddIntentAsync("IntentTest", appId, appVersion);
 
@@ -31,29 +28,25 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     Text = "Hello World!",
                     IntentName = "IntentTest"
                 });
-                await client.TrainAsync(appId, appVersion);
 
-                do
+                var trainingDetails = await client.TrainAndGetFinalStatusAsync(appId, appVersion);
+                if (trainingDetails.Status.Equals("Success"))
                 {
-                    trainingList = await client.GetTrainingStatusListAsync(appId, appVersion);
+                    var publish = await client.PublishAsync(appId, appVersion, false, "westus");
+                    Assert.IsNotNull(publish);
                 }
-                while (!trainingList.All(x => x.Details.Status.Equals("Success")));
-
-                var publish = await client.PublishAsync(appId, appVersion, false, "westus");
-
-                Assert.IsNotNull(publish);
             }
         }
 
         [TestMethod]
         public async Task ShouldThrowExceptionOnPublishModelWhenAppNotExists()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.PublishAsync(InvalidId, appVersion, false, "westus"));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
+                Assert.AreEqual("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
         }
     }

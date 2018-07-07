@@ -45,7 +45,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
                     client.TrainAsync(InvalidId, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
+                Assert.AreEqual("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
         }
 
