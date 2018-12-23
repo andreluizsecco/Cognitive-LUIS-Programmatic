@@ -32,7 +32,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var trainingDetails = await client.TrainAndGetFinalStatusAsync(appId, appVersion);
                 if (trainingDetails.Status.Equals("Success"))
                 {
-                    var publish = await client.PublishAsync(appId, appVersion, false, "westus");
+                    var publish = await client.PublishAsync(appId, appVersion, false, BaseTest.Region.ToString().ToLower());
                     Assert.IsNotNull(publish);
                 }
             }
