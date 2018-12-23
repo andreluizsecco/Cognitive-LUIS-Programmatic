@@ -20,7 +20,7 @@ namespace Cognitive.LUIS.Programmatic
         public async Task<IReadOnlyCollection<Intent>> GetAllIntentsAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             IReadOnlyCollection<Intent> intents = Array.Empty<Intent>();
-            var response = await Get($"apps/{appId}/versions/{appVersionId}/intents");
+            var response = await Get($"apps/{appId}/versions/{appVersionId}/intents?skip={skip}&take={take}");
             if (response != null)
                 intents = JsonConvert.DeserializeObject<IReadOnlyCollection<Intent>>(response);
             return intents;
