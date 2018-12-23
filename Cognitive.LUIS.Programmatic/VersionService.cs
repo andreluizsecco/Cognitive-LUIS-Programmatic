@@ -1,6 +1,5 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,9 +12,7 @@ namespace Cognitive.LUIS.Programmatic
             IReadOnlyCollection<AppVersion> apps = new List<AppVersion>();
             var response = await Get($"apps/{appId}/versions?skip={skip}&take={take}");
             if (response != null)
-            {
                 apps = JsonConvert.DeserializeObject<IReadOnlyCollection<AppVersion>>(response);
-            }
 
             return apps;
         }
@@ -24,9 +21,7 @@ namespace Cognitive.LUIS.Programmatic
         {
             var response = await Get($"apps/{appId}/versions/{versionId}/");
             if (response != null)
-            {
                 return JsonConvert.DeserializeObject<AppVersion>(response);
-            }
 
             return null;
         }
