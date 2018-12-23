@@ -1,35 +1,29 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    [TestClass]
     public class ExampleTests : BaseTest
     {
         public const string IntentName = "IntentTest";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context) =>
+        public ExampleTests() =>
             Initialize();
 
-        [ClassCleanup]
-        public static void ClassCleanup() =>
-            Cleanup();
-
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetLabeledExamplesList()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var examples = await client.GetAllLabeledExamplesAsync(appId, appVersion);
-                Assert.IsInstanceOfType(examples, typeof(IEnumerable<ReviewExample>));
+                Assert.IsAssignableFrom<IEnumerable<ReviewExample>>(examples);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldAddExample()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -49,10 +43,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var utterance = await client.AddExampleAsync(appId, appVersion, example);
 
-                Assert.IsNotNull(utterance);
+                Assert.NotNull(utterance);
             }
         }
-        [TestMethod]
+        [Fact]
         public async Task ShouldAddLabelledExample()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -81,11 +75,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var utterance = await client.AddExampleAsync(appId, appVersion, labeledExample);
 
-                Assert.IsNotNull(utterance);
+                Assert.NotNull(utterance);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShoulAddBatchExample()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -108,12 +102,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var addExamples = await client.AddBatchExampleAsync(appId, appVersion, examples.ToArray());
 
-                Assert.AreEqual(2, addExamples.Length);
+                Assert.Equal(2, addExamples.Length);
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task ShoulAddBatchLbeledExample()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -159,12 +153,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var addExamples = await client.AddBatchExampleAsync(appId, appVersion, examples.ToArray());
 
-                Assert.AreEqual(false, addExamples[0].HasError);
-                Assert.AreEqual(false, addExamples[1].HasError);
+                Assert.False(addExamples[0].HasError);
+                Assert.False(addExamples[1].HasError);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnAddExampleWhenIntentTestNotExists()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -179,11 +173,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     IntentName = IntentName
                 };
 
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.AddExampleAsync(appId, appVersion, example));
 
-                Assert.AreEqual("BadArgument - The intent classifier IntentTest does not exist in the application version.", ex.Message);
+                Assert.Equal("BadArgument - The intent classifier IntentTest does not exist in the application version.", ex.Message);
             }
         }
+
+        public override void Dispose() =>
+            Cleanup();
     }
 }

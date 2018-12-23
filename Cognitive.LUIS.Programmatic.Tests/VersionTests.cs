@@ -1,22 +1,16 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    [TestClass]
     public class VersionTests : BaseTest
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context) =>
+        public VersionTests() =>
             Initialize();
 
-        [ClassCleanup]
-        public static void ClassCleanup() =>
-            Cleanup();
-
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetVersionList()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -26,11 +20,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 // Act
                 var versions = await client.GetAllVersionsAsync(app.Id);
 
-                Assert.IsInstanceOfType(versions, typeof(IEnumerable<AppVersion>));
+                Assert.IsAssignableFrom<IEnumerable<AppVersion>>(versions);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetEmptyEnumerableWhenAppIdDoesNotExist()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -38,12 +32,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 // Act
                 var versions = await client.GetAllVersionsAsync(appId: InvalidId);
 
-                Assert.IsNotNull(versions);
-                Assert.IsTrue(versions.Count == 0, "Method should return an empty enumerable.");
+                Assert.NotNull(versions);
+                Assert.True(versions.Count == 0, "Method should return an empty enumerable.");
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetNullWhenAppIdDoesNotExist()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -51,11 +45,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 // Act
                 var version = await client.GetVersionAsync(InvalidId, "1.0");
 
-                Assert.IsNull(version);
+                Assert.Null(version);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetVersion()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -65,8 +59,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 // Act
                 var version = await client.GetVersionAsync(app.Id, "1.0");
 
-                Assert.IsNotNull(version);
+                Assert.NotNull(version);
             }
         }
+
+        public override void Dispose() =>
+            Cleanup();
     }
 }

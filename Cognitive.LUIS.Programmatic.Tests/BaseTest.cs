@@ -1,6 +1,8 @@
+using System;
+
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    public class BaseTest
+    public abstract class BaseTest : IDisposable
     {
         protected const string SubscriptionKey = "{YourSubscriptionKey}";
         protected const Regions Region = Regions.WestUS;
@@ -8,7 +10,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         protected const string appVersion = "1.0";
         protected static string appId;
 
-        protected static void Initialize()
+        protected void Initialize()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
             var app = client.GetAppByNameAsync("SDKTest").Result;
@@ -18,7 +20,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 appId = client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion).Result;
         }
         
-        protected static void Cleanup()
+        protected void Cleanup()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
             var app = client.GetAppByNameAsync("SDKTest").Result;
@@ -29,5 +31,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 client.DeleteAppAsync(app.Id).Wait();
             appId = null;
         }
+
+        public abstract void Dispose();
     }
 }

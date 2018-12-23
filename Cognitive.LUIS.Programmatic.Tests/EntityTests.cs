@@ -1,37 +1,31 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    [TestClass]
     public class EntityTests : BaseTest
     {
         public const string EntityName = "EntityTest";
         public const string EntityNameChanged = "EntityTestChanged";
 
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context) =>
+        public EntityTests() =>
             Initialize();
 
-        [ClassCleanup]
-        public static void ClassCleanup() =>
-            Cleanup();
-
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetEntityList()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var entities = await client.GetAllEntitiesAsync(appId, appVersion);
-                Assert.IsInstanceOfType(entities, typeof(IEnumerable<Entity>));
+                Assert.IsAssignableFrom<IEnumerable<Entity>>(entities);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetExistEntityById()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -46,21 +40,21 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var firstEntity = entities.FirstOrDefault();
 
                 var entity = await client.GetEntityByIdAsync(firstEntity.Id, appId, appVersion);
-                Assert.AreEqual(firstEntity.Name, entity.Name);
+                Assert.Equal(firstEntity.Name, entity.Name);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetNullWhenNotExistsEntityId()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var entity = await client.GetEntityByIdAsync(InvalidId, appId, appVersion);
-                Assert.IsNull(entity);
+                Assert.Null(entity);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetEntityByName()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -69,11 +63,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     await client.AddEntityAsync(EntityName, appId, appVersion);
 
                 var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-                Assert.IsNotNull(entity);
+                Assert.NotNull(entity);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetNullWhenNotExistsEntityName()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -83,11 +77,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
 
                 var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-                Assert.IsNull(entity);
+                Assert.Null(entity);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldAddNewEntityTest()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -97,11 +91,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
 
                 var newId = await client.AddEntityAsync(EntityName, appId, appVersion);
-                Assert.IsNotNull(newId);
+                Assert.NotNull(newId);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnEntityNewEntityTestWhenAlreadyExists()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -110,14 +104,14 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 if (entityTest == null)
                     await client.AddEntityAsync(EntityName, appId, appVersion);
 
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.AddEntityAsync(EntityName, appId, appVersion));
 
-                Assert.AreEqual("BadArgument - The models: { EntityTest } already exist in the specified application version.", ex.Message);
+                Assert.Equal("BadArgument - The models: { EntityTest } already exist in the specified application version.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldRenameEntityTest()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -137,11 +131,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 await client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion);
 
                 entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
-                Assert.AreEqual(EntityNameChanged, entity.Name);
+                Assert.Equal(EntityNameChanged, entity.Name);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnRenameEntityTestWhenExistsEntityWithSameName()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -158,26 +152,26 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 if (entityChanged == null)
                     entityChangedId = await client.AddEntityAsync(EntityNameChanged, appId, appVersion);
 
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion));
 
-                Assert.AreEqual("BadArgument - The models: { EntityTestChanged } already exist in the specified application version.", ex.Message);
+                Assert.Equal("BadArgument - The models: { EntityTestChanged } already exist in the specified application version.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnRenameEntityTestWhenNotExists()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.RenameEntityAsync(InvalidId, EntityName, appId, appVersion));
 
-                Assert.AreEqual("BadArgument - Cannot find the input model in the specified application version.", ex.Message);
+                Assert.Equal("BadArgument - Cannot find model 51593248-363e-4a08-b946-2061964dc690 in the specified application version.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldDeleteEntityTest()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
@@ -189,20 +183,23 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 await client.DeleteEntityAsync(entity.Id, appId, appVersion);
                 entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
 
-                Assert.IsNull(entity);
+                Assert.Null(entity);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnDeleteEntityTestWhenNotExists()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.DeleteEntityAsync(InvalidId, appId, appVersion));
 
-                Assert.AreEqual("BadArgument - Cannot find the input model in the specified application version.", ex.Message);
+                Assert.Equal("BadArgument - Cannot find model 51593248-363e-4a08-b946-2061964dc690 in the specified application version.", ex.Message);
             }
         }
+
+        public override void Dispose() =>
+            Cleanup();
     }
 }

@@ -1,22 +1,16 @@
 ﻿using Cognitive.LUIS.Programmatic.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    [TestClass]
     public class PublishTests : BaseTest
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context) =>
+        public PublishTests() =>
             Initialize();
 
-        [ClassCleanup]
-        public static void ClassCleanup() =>
-            Cleanup();
-
-        [TestMethod]
+        [Fact]
         public async Task ShouldSendPublishRequest()
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
@@ -33,21 +27,24 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 if (trainingDetails.Status.Equals("Success"))
                 {
                     var publish = await client.PublishAsync(appId, appVersion, false, BaseTest.Region.ToString().ToLower());
-                    Assert.IsNotNull(publish);
+                    Assert.NotNull(publish);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnPublishModelWhenAppNotExists()
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.PublishAsync(InvalidId, appVersion, false, "westus"));
 
-                Assert.AreEqual("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
+                Assert.Equal("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
         }
+
+        public override void Dispose() =>
+            Cleanup();
     }
 }
