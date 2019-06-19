@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
 
-namespace Cognitive.LUIS.Programmatic
+namespace Cognitive.LUIS.Programmatic.Training
 {
-    public partial class LuisProgClient : ITrainingService
+    public class TrainingService : ServiceClient, ITrainingService
     {
+        public TrainingService(string subscriptionKey, Regions region)
+            : base(subscriptionKey, region) { }
+
         /// <summary>
         /// Sends a training request for a version of a specified LUIS app
         /// </summary>
@@ -28,12 +31,12 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>A list of trainings status</returns>
-        public async Task<IReadOnlyCollection<Training>> GetTrainingStatusListAsync(string appId, string appVersionId)
+        public async Task<IReadOnlyCollection<Models.Training>> GetStatusListAsync(string appId, string appVersionId)
         {
-            IReadOnlyCollection<Training> trainings = Array.Empty<Training>();
+            IReadOnlyCollection<Models.Training> trainings = Array.Empty<Models.Training>();
             var response = await Get($"apps/{appId}/versions/{appVersionId}/train");
             if (response != null)
-                trainings = JsonConvert.DeserializeObject<IReadOnlyCollection<Training>>(response);
+                trainings = JsonConvert.DeserializeObject<IReadOnlyCollection<Models.Training>>(response);
             return trainings;
         }
         
@@ -47,7 +50,7 @@ namespace Cognitive.LUIS.Programmatic
         public async Task<TrainingDetails> TrainAndGetFinalStatusAsync(string appId, string appVersionId, int timeout = 60)
         {
             var response = await Post($"apps/{appId}/versions/{appVersionId}/train");
-            IEnumerable<Training> trainingStatusList = null;
+            IEnumerable<Models.Training> trainingStatusList = null;
             var maximumWaitTime = DateTime.Now.AddSeconds(timeout);
             
             bool wait = true;
@@ -59,7 +62,7 @@ namespace Cognitive.LUIS.Programmatic
                     
                 response = await Get($"apps/{appId}/versions/{appVersionId}/train");
                 if (response != null)
-                    trainingStatusList = JsonConvert.DeserializeObject<IReadOnlyCollection<Training>>(response);
+                    trainingStatusList = JsonConvert.DeserializeObject<IReadOnlyCollection<Models.Training>>(response);
 
                 statusList = trainingStatusList.Select(x => (TrainingStatus)x.Details.StatusId);
                 wait = statusList.Any(x => (x == TrainingStatus.InProgress || x == TrainingStatus.Queued) && x != TrainingStatus.Fail);

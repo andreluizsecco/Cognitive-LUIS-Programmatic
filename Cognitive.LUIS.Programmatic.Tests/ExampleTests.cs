@@ -18,7 +18,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var examples = await client.GetAllLabeledExamplesAsync(appId, appVersion);
+                var examples = await client.Examples.GetAllAsync(appId, appVersion);
                 Assert.IsAssignableFrom<IEnumerable<ReviewExample>>(examples);
             }
         }
@@ -29,11 +29,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 string intentTestId = null;
-                var intentTest = await client.GetIntentByNameAsync(IntentName, appId, appVersion);
+                var intentTest = await client.Intents.GetByNameAsync(IntentName, appId, appVersion);
                 if (intentTest != null)
                     intentTestId = intentTest.Id;
                 else
-                    intentTestId = await client.AddIntentAsync(IntentName, appId, appVersion);
+                    intentTestId = await client.Intents.AddAsync(IntentName, appId, appVersion);
 
                 var example = new Example
                 {
@@ -41,7 +41,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     IntentName = IntentName
                 };
 
-                var utterance = await client.AddExampleAsync(appId, appVersion, example);
+                var utterance = await client.Examples.AddAsync(appId, appVersion, example);
 
                 Assert.NotNull(utterance);
             }
@@ -52,11 +52,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 // Add simple entity name if not already exists
-                if (await client.GetEntityByNameAsync("name", appId, appVersion) == null)
-                    await client.AddEntityAsync("name", appId, appVersion);
+                if (await client.Entities.GetByNameAsync("name", appId, appVersion) == null)
+                    await client.Entities.AddAsync("name", appId, appVersion);
 
-                if (await client.GetIntentByNameAsync(IntentName, appId, appVersion) == null)
-                    await client.AddIntentAsync(IntentName, appId, appVersion);
+                if (await client.Intents.GetByNameAsync(IntentName, appId, appVersion) == null)
+                    await client.Intents.AddAsync(IntentName, appId, appVersion);
 
                 var labeledExample = new Example()
                 {
@@ -73,7 +73,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     }
                 };
 
-                var utterance = await client.AddExampleAsync(appId, appVersion, labeledExample);
+                var utterance = await client.Examples.AddAsync(appId, appVersion, labeledExample);
 
                 Assert.NotNull(utterance);
             }
@@ -84,8 +84,8 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetIntentByNameAsync(IntentName, appId, appVersion) == null)
-                    await client.AddIntentAsync(IntentName, appId, appVersion);
+                if (await client.Intents.GetByNameAsync(IntentName, appId, appVersion) == null)
+                    await client.Intents.AddAsync(IntentName, appId, appVersion);
 
                 List<Example> examples = new List<Example>();
                 examples.Add(new Example
@@ -100,7 +100,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     IntentName = IntentName
                 });
 
-                var addExamples = await client.AddBatchExampleAsync(appId, appVersion, examples.ToArray());
+                var addExamples = await client.Examples.AddBatchAsync(appId, appVersion, examples.ToArray());
 
                 Assert.Equal(2, addExamples.Length);
             }
@@ -113,12 +113,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 // Add simple entity name if not already exists
-                if (await client.GetEntityByNameAsync("name", appId, appVersion) == null)
-                    await client.AddEntityAsync("name", appId, appVersion);
+                if (await client.Entities.GetByNameAsync("name", appId, appVersion) == null)
+                    await client.Entities.AddAsync("name", appId, appVersion);
 
                 // Add simple intent name if not already exists
-                if (await client.GetIntentByNameAsync(IntentName, appId, appVersion) == null)
-                    await client.AddIntentAsync(IntentName, appId, appVersion);
+                if (await client.Intents.GetByNameAsync(IntentName, appId, appVersion) == null)
+                    await client.Intents.AddAsync(IntentName, appId, appVersion);
 
                 List<Example> examples = new List<Example>();
                 examples.Add(new Example()
@@ -151,7 +151,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     }
                 });
 
-                var addExamples = await client.AddBatchExampleAsync(appId, appVersion, examples.ToArray());
+                var addExamples = await client.Examples.AddBatchAsync(appId, appVersion, examples.ToArray());
 
                 Assert.False(addExamples[0].HasError);
                 Assert.False(addExamples[1].HasError);
@@ -163,9 +163,9 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var intentTest = await client.GetIntentByNameAsync(IntentName, appId, appVersion);
+                var intentTest = await client.Intents.GetByNameAsync(IntentName, appId, appVersion);
                 if (intentTest != null)
-                    await client.DeleteIntentAsync(intentTest.Id, appId, appVersion);
+                    await client.Intents.DeleteAsync(intentTest.Id, appId, appVersion);
 
                 var example = new Example
                 {
@@ -174,7 +174,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 };
 
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.AddExampleAsync(appId, appVersion, example));
+                    client.Examples.AddAsync(appId, appVersion, example));
 
                 Assert.Equal("BadArgument - The intent classifier IntentTest does not exist in the application version.", ex.Message);
             }

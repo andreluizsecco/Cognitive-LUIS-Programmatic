@@ -1,16 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 
-namespace Cognitive.LUIS.Programmatic
+namespace Cognitive.LUIS.Programmatic.Entities
 {
-    public interface IEntityService
+    public interface IEntityService : IDisposable
     {
-        Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId, int skip, int take);
-        Task<Entity> GetEntityByIdAsync(string id, string appId, string appVersionId);
-        Task<Entity> GetEntityByNameAsync(string name, string appId, string appVersionId);
-        Task<string> AddEntityAsync(string name, string appId, string appVersionId);
-        Task RenameEntityAsync(string id, string name, string appId, string appVersionId);
-        Task DeleteEntityAsync(string id, string appId, string appVersionId);
+        Task<IReadOnlyCollection<Entity>> GetAllAsync(string appId, string appVersionId, int skip = 0, int take = 100);
+        Task<Entity> GetByIdAsync(string id, string appId, string appVersionId);
+        Task<Entity> GetByNameAsync(string name, string appId, string appVersionId);
+        Task<string> AddAsync(string name, string appId, string appVersionId);
+        Task RenameAsync(string id, string name, string appId, string appVersionId);
+        Task DeleteAsync(string id, string appId, string appVersionId);
     }
 }

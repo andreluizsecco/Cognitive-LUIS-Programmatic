@@ -5,17 +5,20 @@ using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
 
-namespace Cognitive.LUIS.Programmatic
+namespace Cognitive.LUIS.Programmatic.Apps
 {
-    public partial class LuisProgClient : IAppService
+    public class AppService : ServiceClient, IAppService
     {
+        public AppService(string subscriptionKey, Regions region)
+            : base(subscriptionKey, region) { }
+
         /// <summary>
         /// Lists all of the user applications
         /// </summary>
         /// <param name="skip">the number of entries to skip. Default value is 0</param>
         /// <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
         /// <returns>A List of LUIS apps</returns>
-        public async Task<IReadOnlyCollection<LuisApp>> GetAllAppsAsync(int skip = 0, int take = 100)
+        public async Task<IReadOnlyCollection<LuisApp>> GetAllAsync(int skip = 0, int take = 100)
         {
             IReadOnlyCollection<LuisApp> apps = Array.Empty<LuisApp>();
             var response = await Get($"apps?skip={skip}&take={take}");
@@ -29,7 +32,7 @@ namespace Cognitive.LUIS.Programmatic
         /// </summary>
         /// <param name="id">app id</param>
         /// <returns>LUIS app</returns>
-        public async Task<LuisApp> GetAppByIdAsync(string id)
+        public async Task<LuisApp> GetByIdAsync(string id)
         {
             var response = await Get($"apps/{id}");
             if (response != null)
@@ -42,9 +45,9 @@ namespace Cognitive.LUIS.Programmatic
         /// </summary>
         /// <param name="name">app name</param>
         /// <returns>LUIS app</returns>
-        public async Task<LuisApp> GetAppByNameAsync(string name)
+        public async Task<LuisApp> GetByNameAsync(string name)
         {
-            var apps = await GetAllAppsAsync();
+            var apps = await GetAllAsync();
             return apps.FirstOrDefault(app => app.Name.Equals(name));
         }
 
@@ -58,7 +61,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="domain"></param>
         /// <param name="initialVersionId"></param>
         /// <returns>The ID of the created app</returns>
-        public async Task<string> AddAppAsync(string name, string description, string culture, string usageScenario, string domain, string initialVersionId)
+        public async Task<string> AddAsync(string name, string description, string culture, string usageScenario, string domain, string initialVersionId)
         {
             var app = new
             {
@@ -80,7 +83,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="name">new app name</param>
         /// <param name="description">new app description</param>
         /// <returns></returns>
-        public async Task RenameAppAsync(string id, string name, string description)
+        public async Task RenameAsync(string id, string name, string description)
         {
             var app = new
             {
@@ -95,7 +98,7 @@ namespace Cognitive.LUIS.Programmatic
         /// </summary>
         /// <param name="id">app id</param>
         /// <returns></returns>
-        public async Task DeleteAppAsync(string id)
+        public async Task DeleteAsync(string id)
         {
             await Delete($"apps/{id}");
         }

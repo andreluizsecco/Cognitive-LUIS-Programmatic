@@ -15,10 +15,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByNameAsync("SDKTest");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
 
                 // Act
-                var versions = await client.GetAllVersionsAsync(app.Id);
+                var versions = await client.Versions.GetAllAsync(app.Id);
 
                 Assert.IsAssignableFrom<IEnumerable<AppVersion>>(versions);
             }
@@ -30,7 +30,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 // Act
-                var versions = await client.GetAllVersionsAsync(appId: InvalidId);
+                var versions = await client.Versions.GetAllAsync(appId: InvalidId);
 
                 Assert.NotNull(versions);
                 Assert.True(versions.Count == 0, "Method should return an empty enumerable.");
@@ -43,7 +43,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 // Act
-                var version = await client.GetVersionAsync(InvalidId, "1.0");
+                var version = await client.Versions.GetByIdAsync(InvalidId, "1.0");
 
                 Assert.Null(version);
             }
@@ -54,10 +54,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByNameAsync("SDKTest");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
 
                 // Act
-                var version = await client.GetVersionAsync(app.Id, "1.0");
+                var version = await client.Versions.GetByIdAsync(app.Id, "1.0");
 
                 Assert.NotNull(version);
             }

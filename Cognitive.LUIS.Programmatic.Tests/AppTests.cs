@@ -17,7 +17,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var apps = await client.GetAllAppsAsync();
+                var apps = await client.Apps.GetAllAsync();
                 Assert.IsAssignableFrom<IEnumerable<LuisApp>>(apps);
             }
         }
@@ -27,11 +27,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var apps = await client.GetAllAppsAsync();
+                var apps = await client.Apps.GetAllAsync();
 
                 var firstApp = apps.FirstOrDefault();
 
-                var app = await client.GetAppByIdAsync(firstApp.Id);
+                var app = await client.Apps.GetByIdAsync(firstApp.Id);
                 Assert.Equal(firstApp.Name, app.Name);
             }
         }
@@ -41,7 +41,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByIdAsync(InvalidId);
+                var app = await client.Apps.GetByIdAsync(InvalidId);
                 Assert.Null(app);
             }
         }
@@ -51,10 +51,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetAppByNameAsync("SDKTest") == null)
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                if (await client.Apps.GetByNameAsync("SDKTest") == null)
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
 
-                var app = await client.GetAppByNameAsync("SDKTest");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
                 Assert.NotNull(app);
             }
         }
@@ -64,11 +64,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var appTest = await client.GetAppByNameAsync("SDKTest");
+                var appTest = await client.Apps.GetByNameAsync("SDKTest");
                 if (appTest != null)
-                    await client.DeleteAppAsync(appTest.Id);
+                    await client.Apps.DeleteAsync(appTest.Id);
 
-                var app = await client.GetAppByNameAsync("SDKTest");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
                 Assert.Null(app);
             }
         }
@@ -78,11 +78,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var appTest = await client.GetAppByNameAsync("SDKTest");
+                var appTest = await client.Apps.GetByNameAsync("SDKTest");
                 if (appTest != null)
-                    await client.DeleteAppAsync(appTest.Id);
+                    await client.Apps.DeleteAsync(appTest.Id);
 
-                var newId = await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                var newId = await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
                 Assert.NotNull(newId);
             }
         }
@@ -93,7 +93,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
+                    client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
 
                 Assert.Equal("BadArgument - SDKTest already exists.", ex.Message);
             }
@@ -104,21 +104,21 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByNameAsync("SDKTest");
-                var appChanged = await client.GetAppByNameAsync("SDKTestChanged");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                var appChanged = await client.Apps.GetByNameAsync("SDKTestChanged");
 
                 if (app == null)
                 {
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
-                    app = await client.GetAppByNameAsync("SDKTest");
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                    app = await client.Apps.GetByNameAsync("SDKTest");
                 }
 
                 if (appChanged != null)
-                    await client.DeleteAppAsync(appChanged.Id);
+                    await client.Apps.DeleteAsync(appChanged.Id);
 
-                await client.RenameAppAsync(app.Id, "SDKTestChanged", "Description changed");
+                await client.Apps.RenameAsync(app.Id, "SDKTestChanged", "Description changed");
 
-                app = await client.GetAppByIdAsync(app.Id);
+                app = await client.Apps.GetByIdAsync(app.Id);
                 Assert.Equal("SDKTestChanged", app.Name);
             }
         }
@@ -128,20 +128,20 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByNameAsync("SDKTest");
-                var appChanged = await client.GetAppByNameAsync("SDKTestChanged");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                var appChanged = await client.Apps.GetByNameAsync("SDKTestChanged");
                 string appChangedId = null;
 
                 if (app == null)
                 {
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
-                    app = await client.GetAppByNameAsync("SDKTest");
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                    app = await client.Apps.GetByNameAsync("SDKTest");
                 }
                 if (appChanged == null)
-                    appChangedId = await client.AddAppAsync("SDKTestChanged", "Description changed", "en-us", "SDKTest", string.Empty, appVersion);
+                    appChangedId = await client.Apps.AddAsync("SDKTestChanged", "Description changed", "en-us", "SDKTest", string.Empty, appVersion);
 
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.RenameAppAsync(app.Id, "SDKTestChanged", "Description changed"));
+                    client.Apps.RenameAsync(app.Id, "SDKTestChanged", "Description changed"));
 
                 Assert.Equal("BadArgument - SDKTestChanged already exists.", ex.Message);
             }
@@ -153,7 +153,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.RenameAppAsync(InvalidId, "SDKTest", "SDKTestChanged"));
+                    client.Apps.RenameAsync(InvalidId, "SDKTest", "SDKTestChanged"));
 
                 Assert.Equal("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
@@ -164,12 +164,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetAppByNameAsync("SDKTest") == null)
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                if (await client.Apps.GetByNameAsync("SDKTest") == null)
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
 
-                var app = await client.GetAppByNameAsync("SDKTest");
-                await client.DeleteAppAsync(app.Id);
-                var newapp = await client.GetAppByIdAsync(app.Id);
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                await client.Apps.DeleteAsync(app.Id);
+                var newapp = await client.Apps.GetByIdAsync(app.Id);
 
                 Assert.Null(newapp);
             }
@@ -181,7 +181,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.DeleteAppAsync(InvalidId));
+                    client.Apps.DeleteAsync(InvalidId));
 
                 Assert.Equal("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }

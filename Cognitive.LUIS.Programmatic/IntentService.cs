@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
 
-namespace Cognitive.LUIS.Programmatic
+namespace Cognitive.LUIS.Programmatic.Intents
 {
-    public partial class LuisProgClient : IIntentService
+    public class IntentService : ServiceClient, IIntentService
     {
+        public IntentService(string subscriptionKey, Regions region)
+            : base(subscriptionKey, region) { }
+
         /// <summary>
         /// Gets information about the intent models
         /// </summary>
@@ -17,7 +20,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="skip">the number of entries to skip. Default value is 0</param>
         /// <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
         /// <returns>A List of app intents</returns>
-        public async Task<IReadOnlyCollection<Intent>> GetAllIntentsAsync(string appId, string appVersionId, int skip = 0, int take = 100)
+        public async Task<IReadOnlyCollection<Intent>> GetAllAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             IReadOnlyCollection<Intent> intents = Array.Empty<Intent>();
             var response = await Get($"apps/{appId}/versions/{appVersionId}/intents?skip={skip}&take={take}");
@@ -33,7 +36,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>app intent</returns>
-        public async Task<Intent> GetIntentByIdAsync(string id, string appId, string appVersionId)
+        public async Task<Intent> GetByIdAsync(string id, string appId, string appVersionId)
         {
             var response = await Get($"apps/{appId}/versions/{appVersionId}/intents/{id}");
             if (response != null)
@@ -48,9 +51,9 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>app intent</returns>
-        public async Task<Intent> GetIntentByNameAsync(string name, string appId, string appVersionId)
+        public async Task<Intent> GetByNameAsync(string name, string appId, string appVersionId)
         {
-            var apps = await GetAllIntentsAsync(appId, appVersionId);
+            var apps = await GetAllAsync(appId, appVersionId);
             if (apps != null)
                 return apps.FirstOrDefault(intent => intent.Name.Equals(name));
             else
@@ -64,7 +67,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>The ID of the created intent</returns>
-        public async Task<string> AddIntentAsync(string name, string appId, string appVersionId)
+        public async Task<string> AddAsync(string name, string appId, string appVersionId)
         {
             var intent = new
             {
@@ -82,7 +85,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns></returns>
-        public async Task RenameIntentAsync(string id, string name, string appId, string appVersionId)
+        public async Task RenameAsync(string id, string name, string appId, string appVersionId)
         {
             var intent = new
             {
@@ -100,7 +103,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appVersionId">app version</param>
         /// <param name="deleteUtterances">delete utterances flag. Optional paramater with default value 'false'.</param>
         /// <returns></returns>
-        public async Task DeleteIntentAsync(string id, string appId, string appVersionId, bool deleteUtterances = false) =>
+        public async Task DeleteAsync(string id, string appId, string appVersionId, bool deleteUtterances = false) =>
             await Delete($"apps/{appId}/versions/{appVersionId}/intents/{id}?deleteUtterances={deleteUtterances}");
     }
 }

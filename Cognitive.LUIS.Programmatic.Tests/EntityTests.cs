@@ -20,7 +20,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                var entities = await client.Entities.GetAllAsync(appId, appVersion);
                 Assert.IsAssignableFrom<IEnumerable<Entity>>(entities);
             }
         }
@@ -30,16 +30,16 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                var entities = await client.Entities.GetAllAsync(appId, appVersion);
                 if (entities.Count == 0)
                 {
-                    await client.AddEntityAsync(EntityName, appId, appVersion);
-                    entities = await client.GetAllEntitiesAsync(appId, appVersion);
+                    await client.Entities.AddAsync(EntityName, appId, appVersion);
+                    entities = await client.Entities.GetAllAsync(appId, appVersion);
                 }
 
                 var firstEntity = entities.FirstOrDefault();
 
-                var entity = await client.GetEntityByIdAsync(firstEntity.Id, appId, appVersion);
+                var entity = await client.Entities.GetByIdAsync(firstEntity.Id, appId, appVersion);
                 Assert.Equal(firstEntity.Name, entity.Name);
             }
         }
@@ -49,7 +49,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entity = await client.GetEntityByIdAsync(InvalidId, appId, appVersion);
+                var entity = await client.Entities.GetByIdAsync(InvalidId, appId, appVersion);
                 Assert.Null(entity);
             }
         }
@@ -59,10 +59,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetEntityByNameAsync(EntityName, appId, appVersion) == null)
-                    await client.AddEntityAsync(EntityName, appId, appVersion);
+                if (await client.Entities.GetByNameAsync(EntityName, appId, appVersion) == null)
+                    await client.Entities.AddAsync(EntityName, appId, appVersion);
 
-                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 Assert.NotNull(entity);
             }
         }
@@ -72,11 +72,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entityTest = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 if (entityTest != null)
-                    await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
+                    await client.Entities.DeleteAsync(entityTest.Id, appId, appVersion);
 
-                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 Assert.Null(entity);
             }
         }
@@ -86,11 +86,11 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entityTest = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 if (entityTest != null)
-                    await client.DeleteEntityAsync(entityTest.Id, appId, appVersion);
+                    await client.Entities.DeleteAsync(entityTest.Id, appId, appVersion);
 
-                var newId = await client.AddEntityAsync(EntityName, appId, appVersion);
+                var newId = await client.Entities.AddAsync(EntityName, appId, appVersion);
                 Assert.NotNull(newId);
             }
         }
@@ -100,12 +100,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entityTest = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                var entityTest = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 if (entityTest == null)
-                    await client.AddEntityAsync(EntityName, appId, appVersion);
+                    await client.Entities.AddAsync(EntityName, appId, appVersion);
 
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.AddEntityAsync(EntityName, appId, appVersion));
+                    client.Entities.AddAsync(EntityName, appId, appVersion));
 
                 Assert.Equal("BadArgument - The models: { EntityTest } already exist in the specified application version.", ex.Message);
             }
@@ -116,21 +116,21 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-                var entityChanged = await client.GetEntityByNameAsync(EntityNameChanged, appId, appVersion);
+                var entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
+                var entityChanged = await client.Entities.GetByNameAsync(EntityNameChanged, appId, appVersion);
 
                 if (entity == null)
                 {
-                    await client.AddEntityAsync(EntityName, appId, appVersion);
-                    entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                    await client.Entities.AddAsync(EntityName, appId, appVersion);
+                    entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 }
 
                 if (entityChanged != null)
-                    await client.DeleteEntityAsync(entityChanged.Id, appId, appVersion);
+                    await client.Entities.DeleteAsync(entityChanged.Id, appId, appVersion);
 
-                await client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion);
+                await client.Entities.RenameAsync(entity.Id, EntityNameChanged, appId, appVersion);
 
-                entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
+                entity = await client.Entities.GetByIdAsync(entity.Id, appId, appVersion);
                 Assert.Equal(EntityNameChanged, entity.Name);
             }
         }
@@ -140,20 +140,20 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-                var entityChanged = await client.GetEntityByNameAsync(EntityNameChanged, appId, appVersion);
+                var entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
+                var entityChanged = await client.Entities.GetByNameAsync(EntityNameChanged, appId, appVersion);
                 string entityChangedId = null;
 
                 if (entity == null)
                 {
-                    await client.AddEntityAsync(EntityName, appId, appVersion);
-                    entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
+                    await client.Entities.AddAsync(EntityName, appId, appVersion);
+                    entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
                 }
                 if (entityChanged == null)
-                    entityChangedId = await client.AddEntityAsync(EntityNameChanged, appId, appVersion);
+                    entityChangedId = await client.Entities.AddAsync(EntityNameChanged, appId, appVersion);
 
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.RenameEntityAsync(entity.Id, EntityNameChanged, appId, appVersion));
+                    client.Entities.RenameAsync(entity.Id, EntityNameChanged, appId, appVersion));
 
                 Assert.Equal("BadArgument - The models: { EntityTestChanged } already exist in the specified application version.", ex.Message);
             }
@@ -165,7 +165,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.RenameEntityAsync(InvalidId, EntityName, appId, appVersion));
+                    client.Entities.RenameAsync(InvalidId, EntityName, appId, appVersion));
 
                 Assert.Equal("BadArgument - Cannot find model 51593248-363e-4a08-b946-2061964dc690 in the specified application version.", ex.Message);
             }
@@ -176,12 +176,12 @@ namespace Cognitive.LUIS.Programmatic.Tests
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetEntityByNameAsync(EntityName, appId, appVersion) == null)
-                    await client.AddEntityAsync(EntityName, appId, appVersion);
+                if (await client.Entities.GetByNameAsync(EntityName, appId, appVersion) == null)
+                    await client.Entities.AddAsync(EntityName, appId, appVersion);
 
-                var entity = await client.GetEntityByNameAsync(EntityName, appId, appVersion);
-                await client.DeleteEntityAsync(entity.Id, appId, appVersion);
-                entity = await client.GetEntityByIdAsync(entity.Id, appId, appVersion);
+                var entity = await client.Entities.GetByNameAsync(EntityName, appId, appVersion);
+                await client.Entities.DeleteAsync(entity.Id, appId, appVersion);
+                entity = await client.Entities.GetByIdAsync(entity.Id, appId, appVersion);
 
                 Assert.Null(entity);
             }
@@ -193,7 +193,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
-                    client.DeleteEntityAsync(InvalidId, appId, appVersion));
+                    client.Entities.DeleteAsync(InvalidId, appId, appVersion));
 
                 Assert.Equal("BadArgument - Cannot find model 51593248-363e-4a08-b946-2061964dc690 in the specified application version.", ex.Message);
             }

@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
 
-namespace Cognitive.LUIS.Programmatic
+namespace Cognitive.LUIS.Programmatic.Entities
 {
-    public partial class LuisProgClient : IEntityService
+    public class EntityService : ServiceClient, IEntityService
     {
+        public EntityService(string subscriptionKey, Regions region)
+            : base(subscriptionKey, region) { }
+
         /// <summary>
         /// Gets information about the entity models
         /// </summary>
@@ -17,7 +20,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="skip">the number of entries to skip. Default value is 0</param>
         /// <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
         /// <returns>A List of app entities</returns>
-        public async Task<IReadOnlyCollection<Entity>> GetAllEntitiesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
+        public async Task<IReadOnlyCollection<Entity>> GetAllAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             IReadOnlyCollection<Entity> entities = Array.Empty<Entity>();
             var response = await Get($"apps/{appId}/versions/{appVersionId}/entities?skip={skip}&take={take}");
@@ -33,7 +36,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>app entity</returns>
-        public async Task<Entity> GetEntityByIdAsync(string id, string appId, string appVersionId)
+        public async Task<Entity> GetByIdAsync(string id, string appId, string appVersionId)
         {
             var response = await Get($"apps/{appId}/versions/{appVersionId}/entities/{id}");
             if (response != null)
@@ -48,9 +51,9 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>app entity</returns>
-        public async Task<Entity> GetEntityByNameAsync(string name, string appId, string appVersionId)
+        public async Task<Entity> GetByNameAsync(string name, string appId, string appVersionId)
         {
-            var apps = await GetAllEntitiesAsync(appId, appVersionId);
+            var apps = await GetAllAsync(appId, appVersionId);
             return apps.FirstOrDefault(Entity => Entity.Name.Equals(name));
         }
 
@@ -61,7 +64,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns>The ID of the created entity</returns>
-        public async Task<string> AddEntityAsync(string name, string appId, string appVersionId)
+        public async Task<string> AddAsync(string name, string appId, string appVersionId)
         {
             var Entity = new
             {
@@ -79,7 +82,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns></returns>
-        public async Task RenameEntityAsync(string id, string name, string appId, string appVersionId)
+        public async Task RenameAsync(string id, string name, string appId, string appVersionId)
         {
             var entity = new
             {
@@ -95,7 +98,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appId">app Id</param>
         /// <param name="appVersionId">app version</param>
         /// <returns></returns>
-        public async Task DeleteEntityAsync(string id, string appId, string appVersionId)
+        public async Task DeleteAsync(string id, string appId, string appVersionId)
         {
             await Delete($"apps/{appId}/versions/{appVersionId}/entities/{id}");
         }

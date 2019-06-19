@@ -13,22 +13,22 @@ namespace Cognitive.LUIS.Programmatic.Tests
         protected void Initialize()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
-            var app = client.GetAppByNameAsync("SDKTest").Result;
+            var app = client.Apps.GetByNameAsync("SDKTest").Result;
             if (app != null)
                 appId = app.Id;
             else
-                appId = client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion).Result;
+                appId = client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion).Result;
         }
         
         protected void Cleanup()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
-            var app = client.GetAppByNameAsync("SDKTest").Result;
+            var app = client.Apps.GetByNameAsync("SDKTest").Result;
             if (app != null)
-                client.DeleteAppAsync(app.Id).Wait();
-            app = client.GetAppByNameAsync("SDKTestChanged").Result;
+                client.Apps.DeleteAsync(app.Id).Wait();
+            app = client.Apps.GetByNameAsync("SDKTestChanged").Result;
             if (app != null)
-                client.DeleteAppAsync(app.Id).Wait();
+                client.Apps.DeleteAsync(app.Id).Wait();
             appId = null;
         }
 
