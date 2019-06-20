@@ -52,8 +52,8 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 // Add simple entity name if not already exists
-                if (await client.Entities.GetByNameAsync("name", appId, appVersion) == null)
-                    await client.Entities.AddAsync("name", appId, appVersion);
+                if (await client.Entities.GetSimpleEntityByNameAsync("name", appId, appVersion) == null)
+                    await client.Entities.AddSimpleEntityAsync("name", appId, appVersion);
 
                 if (await client.Intents.GetByNameAsync(IntentName, appId, appVersion) == null)
                     await client.Intents.AddAsync(IntentName, appId, appVersion);
@@ -113,8 +113,8 @@ namespace Cognitive.LUIS.Programmatic.Tests
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
                 // Add simple entity name if not already exists
-                if (await client.Entities.GetByNameAsync("name", appId, appVersion) == null)
-                    await client.Entities.AddAsync("name", appId, appVersion);
+                if (await client.Entities.GetSimpleEntityByNameAsync("name", appId, appVersion) == null)
+                    await client.Entities.AddSimpleEntityAsync("name", appId, appVersion);
 
                 // Add simple intent name if not already exists
                 if (await client.Intents.GetByNameAsync(IntentName, appId, appVersion) == null)
