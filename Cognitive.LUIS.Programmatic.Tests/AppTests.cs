@@ -95,7 +95,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
 
-                Assert.Equal("BadArgument - SDKTest already exists.", ex.Message);
+                Assert.Equal("BadArgument - An application with the same name (SDKTest) already exists.", ex.Message);
             }
         }
 
@@ -143,7 +143,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var ex = await Assert.ThrowsAsync<Exception>(() =>
                     client.Apps.RenameAsync(app.Id, "SDKTestChanged", "Description changed"));
 
-                Assert.Equal("BadArgument - SDKTestChanged already exists.", ex.Message);
+                Assert.Equal("BadArgument - An application with the same name (SDKTestChanged) already exists.", ex.Message);
             }
         }
 

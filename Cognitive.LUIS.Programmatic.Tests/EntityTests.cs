@@ -96,8 +96,10 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var entities = await client.Entities.GetAllCompositeEntitiesAsync(appId, appVersion);
                 if (entities.Count == 0)
                 {
-                    await client.Entities.AddSimpleEntityAsync(SimpleEntityName, appId, appVersion);
-                    await client.Entities.AddCompositeEntityAsync(CompositeEntityName, new[] { "SimpleEntityTest" }, appId, appVersion);
+                    if (await client.Entities.GetSimpleEntityByNameAsync($"{CompositeEntityName}1", appId, appVersion) == null)
+                        await client.Entities.AddSimpleEntityAsync($"{CompositeEntityName}1", appId, appVersion);
+
+                    await client.Entities.AddCompositeEntityAsync(CompositeEntityName, new[] { $"{CompositeEntityName}1" }, appId, appVersion);
                     entities = await client.Entities.GetAllCompositeEntitiesAsync(appId, appVersion);
                 }
 
@@ -105,7 +107,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
 
                 var entity = await client.Entities.GetCompositeEntityByIdAsync(firstEntity.Id, appId, appVersion);
                 Assert.Equal(firstEntity.Name, entity.Name);
-                Assert.Equal("SimpleEntityTest", firstEntity.Children.ElementAt(0).Name);
+                Assert.Equal("CompositeEntityTest1", firstEntity.Children.ElementAt(0).Name);
             }
         }
 
@@ -173,7 +175,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [Fact]
-        public async Task ShouldGetNullWhenNotExistsEntityId()
+        public async Task ShouldGetNullWhenNotExistsSimpleEntityId()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
@@ -183,7 +185,47 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [Fact]
-        public async Task ShouldGetEntityByName()
+        public async Task ShouldGetNullWhenNotExistsCompositeEntityId()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entity = await client.Entities.GetCompositeEntityByIdAsync(InvalidId, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsClosedListEntityId()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entity = await client.Entities.GetClosedListEntityByIdAsync(InvalidId, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsRegexEntityId()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entity = await client.Entities.GetRegexEntityByIdAsync(InvalidId, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsPatternAnyEntityId()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entity = await client.Entities.GetPatternAnyEntityByIdAsync(InvalidId, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetSimpleEntityByName()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
@@ -196,7 +238,67 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [Fact]
-        public async Task ShouldGetNullWhenNotExistsEntityName()
+        public async Task ShouldGetCompositeEntityByName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {                
+                if (await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion) == null)
+                {
+                    if (await client.Entities.GetSimpleEntityByNameAsync($"{CompositeEntityName}1", appId, appVersion) == null)
+                        await client.Entities.AddSimpleEntityAsync($"{CompositeEntityName}1", appId, appVersion);
+
+                    await client.Entities.AddCompositeEntityAsync(CompositeEntityName, new[] { $"{CompositeEntityName}1" }, appId, appVersion);
+                }
+
+                var entity = await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion);
+                Assert.NotNull(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetClosedListEntityByName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {                
+                if (await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion) == null)
+                    await client.Entities.AddClosedListEntityAsync(ClosedListEntityName, new ClosedListItem[]
+                    {
+                        new ClosedListItem() { CanonicalForm = "SubList", List = new[]{ "value1", "value2" } }
+                    }, appId, appVersion);
+
+                var entity = await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion);
+                Assert.NotNull(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetRegexEntityByName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {                
+                if (await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion) == null)
+                    await client.Entities.AddRegexEntityAsync(RegexEntityName, "[0-9][0-9]", appId, appVersion);
+
+                var entity = await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion);
+                Assert.NotNull(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetPatternAnyEntityByName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {                
+                if (await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion) == null)
+                    await client.Entities.AddPatternAnyEntityAsync(PatternAnyEntityName, new[]{ "value1", "value2" }, appId, appVersion);
+
+                var entity = await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion);
+                Assert.NotNull(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsSimpleEntityName()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
@@ -210,7 +312,63 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [Fact]
-        public async Task ShouldAddNewEntityTest()
+        public async Task ShouldGetNullWhenNotExistsCompositeEntityName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeleteCompositeEntityAsync(entityTest.Id, appId, appVersion);
+
+                var entity = await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsClosedListEntityName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeleteClosedListEntityAsync(entityTest.Id, appId, appVersion);
+
+                var entity = await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsRegexEntityName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeleteRegexEntityAsync(entityTest.Id, appId, appVersion);
+
+                var entity = await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldGetNullWhenNotExistsPatternAnyEntityName()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeletePatternAnyEntityAsync(entityTest.Id, appId, appVersion);
+
+                var entity = await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion);
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldAddNewSimpleEntityTest()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
@@ -224,7 +382,70 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [Fact]
-        public async Task ShouldThrowExceptionOnEntityNewEntityTestWhenAlreadyExists()
+        public async Task ShouldAddNewCompositeEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeleteCompositeEntityAsync(entityTest.Id, appId, appVersion);
+
+                if (await client.Entities.GetSimpleEntityByNameAsync($"{CompositeEntityName}1", appId, appVersion) == null)
+                    await client.Entities.AddSimpleEntityAsync($"{CompositeEntityName}1", appId, appVersion);
+
+                var newId = await client.Entities.AddCompositeEntityAsync(CompositeEntityName,  new[] { $"{CompositeEntityName}1" }, appId, appVersion);
+                Assert.NotNull(newId);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldAddNewClosedListEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeleteClosedListEntityAsync(entityTest.Id, appId, appVersion);
+
+                var newId = await client.Entities.AddClosedListEntityAsync(ClosedListEntityName, 
+                    new[]
+                    {
+                        new ClosedListItem() { CanonicalForm = "SubList", List = new[]{ "value1", "value2" } }
+                    }, appId, appVersion);
+                Assert.NotNull(newId);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldAddNewRegexEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeleteRegexEntityAsync(entityTest.Id, appId, appVersion);
+
+                var newId = await client.Entities.AddRegexEntityAsync(RegexEntityName, "[0-9][0-9]", appId, appVersion);
+                Assert.NotNull(newId);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldAddNewPatternAnyEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion);
+                if (entityTest != null)
+                    await client.Entities.DeletePatternAnyEntityAsync(entityTest.Id, appId, appVersion);
+
+                var newId = await client.Entities.AddPatternAnyEntityAsync(PatternAnyEntityName, new[] { "value1", "value2" }, appId, appVersion);
+                Assert.NotNull(newId);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionOnAddNewSimpleEntityWhenAlreadyExists()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
@@ -236,6 +457,83 @@ namespace Cognitive.LUIS.Programmatic.Tests
                     client.Entities.AddSimpleEntityAsync(SimpleEntityName, appId, appVersion));
 
                 Assert.Equal("BadArgument - The models: { SimpleEntityTest } already exist in the specified application version.", ex.Message);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionOnAddNewCompositeEntityWhenAlreadyExists()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetCompositeEntityByNameAsync(SimpleEntityName, appId, appVersion);
+                if (entityTest == null)
+                {
+                    if (await client.Entities.GetSimpleEntityByNameAsync($"{CompositeEntityName}1", appId, appVersion) == null)
+                        await client.Entities.AddSimpleEntityAsync($"{CompositeEntityName}1", appId, appVersion);
+
+                    await client.Entities.AddCompositeEntityAsync(CompositeEntityName, new[] { $"{CompositeEntityName}1" }, appId, appVersion);
+                }
+
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Entities.AddCompositeEntityAsync(CompositeEntityName, new[] { $"{CompositeEntityName}1" }, appId, appVersion));
+
+                Assert.Equal("BadArgument - The models: { CompositeEntityTest } already exist in the specified application version.", ex.Message);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionOnAddNewClosedListEntityWhenAlreadyExists()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetClosedListEntityByNameAsync(SimpleEntityName, appId, appVersion);
+                if (entityTest == null)
+                    await client.Entities.AddClosedListEntityAsync(ClosedListEntityName,
+                        new[]
+                        {
+                            new ClosedListItem() { CanonicalForm = "SubList", List = new[]{ "value1", "value2" } }
+                        }, appId, appVersion);
+
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Entities.AddClosedListEntityAsync(ClosedListEntityName,
+                        new[]
+                        {
+                            new ClosedListItem() { CanonicalForm = "SubList", List = new[]{ "value1", "value2" } }
+                        }, appId, appVersion));
+
+                Assert.Equal("BadArgument - The models: { ClosedListEntityTest } already exist in the specified application version.", ex.Message);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionOnAddNewRegexEntityWhenAlreadyExists()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion);
+                if (entityTest == null)
+                    await client.Entities.AddRegexEntityAsync(RegexEntityName, "[0-9][0-9]", appId, appVersion);
+
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Entities.AddRegexEntityAsync(RegexEntityName, "[0-9][0-9]", appId, appVersion));
+
+                Assert.Equal("BadArgument - The models: { RegexEntityTest } already exist in the specified application version.", ex.Message);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldThrowExceptionOnAddNewPatternAnyEntityWhenAlreadyExists()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                var entityTest = await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion);
+                if (entityTest == null)
+                    await client.Entities.AddPatternAnyEntityAsync(PatternAnyEntityName, new[] { "value1", "value2" }, appId, appVersion);
+
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Entities.AddPatternAnyEntityAsync(PatternAnyEntityName, new[] { "value1", "value2" }, appId, appVersion));
+
+                Assert.Equal("BadArgument - The models: { PatternAnyEntityTest } already exist in the specified application version.", ex.Message);
             }
         }
 
@@ -300,7 +598,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
         }
 
         [Fact]
-        public async Task ShouldDeleteEntityTest()
+        public async Task ShouldDeleteSimpleEntityTest()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
@@ -310,6 +608,79 @@ namespace Cognitive.LUIS.Programmatic.Tests
                 var entity = await client.Entities.GetSimpleEntityByNameAsync(SimpleEntityName, appId, appVersion);
                 await client.Entities.DeleteSimpleEntityAsync(entity.Id, appId, appVersion);
                 entity = await client.Entities.GetSimpleEntityByIdAsync(entity.Id, appId, appVersion);
+
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDeleteCompositeEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                if (await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion) == null)
+                {
+                    if (await client.Entities.GetSimpleEntityByNameAsync($"{CompositeEntityName}1", appId, appVersion) == null)
+                        await client.Entities.AddSimpleEntityAsync($"{CompositeEntityName}1", appId, appVersion);
+
+                    await client.Entities.AddCompositeEntityAsync(CompositeEntityName, new[] { $"{CompositeEntityName}1" }, appId, appVersion);
+                }
+
+                var entity = await client.Entities.GetCompositeEntityByNameAsync(CompositeEntityName, appId, appVersion);
+                await client.Entities.DeleteCompositeEntityAsync(entity.Id, appId, appVersion);
+                entity = await client.Entities.GetCompositeEntityByIdAsync(entity.Id, appId, appVersion);
+
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDeleteClosedListEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                if (await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion) == null)
+                    await client.Entities.AddClosedListEntityAsync(ClosedListEntityName,
+                        new[]
+                        {
+                            new ClosedListItem() { CanonicalForm = "SubList", List = new[]{ "value1", "value2" } }
+                        }, appId, appVersion);
+
+                var entity = await client.Entities.GetClosedListEntityByNameAsync(ClosedListEntityName, appId, appVersion);
+                await client.Entities.DeleteClosedListEntityAsync(entity.Id, appId, appVersion);
+                entity = await client.Entities.GetClosedListEntityByIdAsync(entity.Id, appId, appVersion);
+
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDeleteRegexEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                if (await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion) == null)
+                    await client.Entities.AddRegexEntityAsync(RegexEntityName, "[0-9][0-9]", appId, appVersion);
+
+                var entity = await client.Entities.GetRegexEntityByNameAsync(RegexEntityName, appId, appVersion);
+                await client.Entities.DeleteRegexEntityAsync(entity.Id, appId, appVersion);
+                entity = await client.Entities.GetRegexEntityByIdAsync(entity.Id, appId, appVersion);
+
+                Assert.Null(entity);
+            }
+        }
+
+        [Fact]
+        public async Task ShouldDeletePatternAnyEntityTest()
+        {
+            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            {
+                if (await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion) == null)
+                    await client.Entities.AddPatternAnyEntityAsync(PatternAnyEntityName, new[] { "value1", "value2" }, appId, appVersion);
+
+                var entity = await client.Entities.GetPatternAnyEntityByNameAsync(PatternAnyEntityName, appId, appVersion);
+                await client.Entities.DeletePatternAnyEntityAsync(entity.Id, appId, appVersion);
+                entity = await client.Entities.GetPatternAnyEntityByIdAsync(entity.Id, appId, appVersion);
 
                 Assert.Null(entity);
             }
