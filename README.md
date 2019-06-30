@@ -35,7 +35,7 @@ Check the our Wiki: [https://github.com/andreluizsecco/Cognitive-LUIS-Programmat
 
 Check the complete roadmap: [https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/roadmap](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/wiki/roadmap)
 
-### Features (v1.1.0)
+### Features (v1.2.0)
 #### Apps, Intents and Entities
 * Get all
 * Get by id
@@ -55,8 +55,13 @@ Check the complete roadmap: [https://github.com/andreluizsecco/Cognitive-LUIS-Pr
 * Gets the training status of all models (intents and entities)
 * Sends a training request and get final status
 
+#### Version
+* Get all
+* Get by id
+
 #### Publish
 * Publish app
+
 
 ## Author
 
