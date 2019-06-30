@@ -4,8 +4,11 @@ using Newtonsoft.Json;
 
 namespace Cognitive.LUIS.Programmatic
 {
-    public partial class LuisProgClient : IPublishService
+    public class PublishService : ServiceClient, IPublishService
     {
+        public PublishService(string subscriptionKey, Regions region)
+            : base(subscriptionKey, region) { }
+
         /// <summary>
         /// Publishes a specific version of the application
         /// </summary>

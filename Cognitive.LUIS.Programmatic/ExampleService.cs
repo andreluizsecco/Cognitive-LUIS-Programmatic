@@ -4,10 +4,13 @@ using System.Threading.Tasks;
 using Cognitive.LUIS.Programmatic.Models;
 using Newtonsoft.Json;
 
-namespace Cognitive.LUIS.Programmatic
+namespace Cognitive.LUIS.Programmatic.Examples
 {
-    public partial class LuisProgClient : IExampleService
+    public class ExampleService : ServiceClient, IExampleService
     {
+        public ExampleService(string subscriptionKey, Regions region)
+            : base(subscriptionKey, region) { }
+
         /// <summary>
         /// Gets examples to be reviewed.
         /// </summary>
@@ -16,7 +19,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="skip">the number of entries to skip. Default value is 0</param>
         /// <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
         /// <returns>A list of examples to be reviewed</returns>
-        public async Task<IReadOnlyCollection<ReviewExample>> GetAllLabeledExamplesAsync(string appId, string appVersionId, int skip = 0, int take = 100)
+        public async Task<IReadOnlyCollection<ReviewExample>> GetAllAsync(string appId, string appVersionId, int skip = 0, int take = 100)
         {
             IReadOnlyCollection<ReviewExample> examples = Array.Empty<ReviewExample>();
             var response = await Get($"apps/{appId}/versions/{appVersionId}/examples?skip={skip}&take={take}");
@@ -32,7 +35,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appVersionId">app version</param>
         /// <param name="model">object containing the labeled example</param>
         /// <returns>A object of utterance created</returns>
-        public async Task<Utterance> AddExampleAsync(string appId, string appVersionId, Example model)
+        public async Task<Utterance> AddAsync(string appId, string appVersionId, Example model)
         {
             var response = await Post($"apps/{appId}/versions/{appVersionId}/example", model);
             return JsonConvert.DeserializeObject<Utterance>(response);
@@ -45,7 +48,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appVersionId">app version</param>
         /// <param name="models">array of objects containing the labeled examples</param>
         /// <returns></returns>
-        public async Task<BatchExample[]> AddBatchExampleAsync(string appId, string appVersionId, Example[] models)
+        public async Task<BatchExample[]> AddBatchAsync(string appId, string appVersionId, Example[] models)
         {
             if (models.Length <= 100)
             {
@@ -63,7 +66,7 @@ namespace Cognitive.LUIS.Programmatic
         /// <param name="appVersionId">app version</param>
         /// <param name="exampleId">labeled example id</param>
         /// <returns></returns>
-        public async Task DeleteExampleAsync(string appId, string appVersionId, string exampleId)
+        public async Task DeleteAsync(string appId, string appVersionId, string exampleId)
         {
             await Delete($"apps/{appId}/versions/{appVersionId}/examples/{exampleId}");
         }

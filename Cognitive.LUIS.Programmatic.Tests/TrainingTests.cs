@@ -1,64 +1,59 @@
-﻿using Cognitive.LUIS.Programmatic.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    [TestClass]
     public class TrainingTests : BaseTest
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context) =>
+        public TrainingTests() =>
             Initialize();
 
-        [ClassCleanup]
-        public static void ClassCleanup() =>
-            Cleanup();
-
-        [TestMethod]
+        [Fact]
         public async Task ShouldSendTrainingRequest()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var trainingDetails = await client.TrainAsync(appId, appVersion);
-                Assert.IsNotNull(trainingDetails);
+                var trainingDetails = await client.Training.TrainAsync(appId, appVersion);
+                Assert.NotNull(trainingDetails);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetTrainingStatusList()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var training = await client.GetTrainingStatusListAsync(appId, appVersion);
-                Assert.IsInstanceOfType(training, typeof(IEnumerable<Training>));
+                var training = await client.Training.GetStatusListAsync(appId, appVersion);
+                Assert.IsAssignableFrom<IEnumerable<Models.Training>>(training);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnTrainModelWhenAppNotExists()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                    client.TrainAsync(InvalidId, appVersion));
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Training.TrainAsync(InvalidId, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
+                Assert.Equal("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldSendTrainAndGetFinalStatus()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var trainingDetails = await client.TrainAndGetFinalStatusAsync(appId, appVersion);
+                var trainingDetails = await client.Training.TrainAndGetFinalStatusAsync(appId, appVersion);
 
-                Assert.IsNotNull(trainingDetails);
+                Assert.NotNull(trainingDetails);
             }
         }
 
+        public override void Dispose() =>
+            Cleanup();
     }
 }

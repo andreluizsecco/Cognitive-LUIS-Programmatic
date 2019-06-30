@@ -1,36 +1,37 @@
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    public class BaseTest
+    public abstract class BaseTest : IDisposable
     {
-        protected const string SubscriptionKey = "{YourSubscriptionKey}";
+        protected const string SubscriptionKey = "72a107783ba845b39e2678d64d3a31a4";
         protected const Regions Region = Regions.WestUS;
         protected const string InvalidId = "51593248-363e-4a08-b946-2061964dc690";
         protected const string appVersion = "1.0";
         protected static string appId;
 
-        protected static void Initialize()
+        protected void Initialize()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
-            var app = client.GetAppByNameAsync("SDKTest").Result;
+            var app = client.Apps.GetByNameAsync("SDKTest").Result;
             if (app != null)
                 appId = app.Id;
             else
-                appId = client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion).Result;
+                appId = client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion).Result;
         }
         
-        protected static void Cleanup()
+        protected void Cleanup()
         {
             var client = new LuisProgClient(SubscriptionKey, Region);
-            var app = client.GetAppByNameAsync("SDKTest").Result;
+            var app = client.Apps.GetByNameAsync("SDKTest").Result;
             if (app != null)
-                client.DeleteAppAsync(app.Id).Wait();
-            app = client.GetAppByNameAsync("SDKTestChanged").Result;
+                client.Apps.DeleteAsync(app.Id).Wait();
+            app = client.Apps.GetByNameAsync("SDKTestChanged").Result;
             if (app != null)
-                client.DeleteAppAsync(app.Id).Wait();
+                client.Apps.DeleteAsync(app.Id).Wait();
             appId = null;
         }
+
+        public abstract void Dispose();
     }
 }

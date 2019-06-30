@@ -2,7 +2,7 @@
 .NET SDK for [LUIS Programmatic APIs](https://westus.dev.cognitive.microsoft.com/docs/services/5890b47c39e2bb17b84a55ff)
 
 [![License](https://img.shields.io/github/license/andreluizsecco/cognitive-luis-programmatic.svg)](LICENSE)
-[![Issues open](https://img.shields.io/github/issues/andreluizsecco/cognitive-luis-programmatic.svg)](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/)
+[![Issues open](https://img.shields.io/github/issues/andreluizsecco/cognitive-luis-programmatic.svg)](https://github.com/andreluizsecco/Cognitive-LUIS-Programmatic/issues)
 
 Branch | Build status | Nuget package
 -------|-------|--------------

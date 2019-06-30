@@ -28,7 +28,12 @@ namespace Cognitive.LUIS.Programmatic
             else if (response.StatusCode != System.Net.HttpStatusCode.BadRequest)
             {
                 var exception = JsonConvert.DeserializeObject<ServiceException>(responseContent);
-                throw new Exception($"{exception.Error.Code} - {exception.Error?.Message ?? exception.Message}");
+                var errorMessage = exception.Message;
+                
+                if (exception.Error != null)
+                    errorMessage = $"{exception.Error.Code} - {exception.Error.Message}";
+                
+                throw new Exception(errorMessage);
             }
             return null;
         }

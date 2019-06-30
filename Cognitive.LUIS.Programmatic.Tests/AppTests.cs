@@ -1,196 +1,193 @@
 using Cognitive.LUIS.Programmatic.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Cognitive.LUIS.Programmatic.Tests
 {
-    [TestClass]
     public class AppTests : BaseTest
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context) =>
+        public AppTests() =>
             Initialize();
 
-        [ClassCleanup]
-        public static void ClassCleanup() =>
-            Cleanup();
-            
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetAppList()
         {
             using(var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var apps = await client.GetAllAppsAsync();
-                Assert.IsInstanceOfType(apps, typeof(IEnumerable<LuisApp>));
+                var apps = await client.Apps.GetAllAsync();
+                Assert.IsAssignableFrom<IEnumerable<LuisApp>>(apps);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetExistAppById()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var apps = await client.GetAllAppsAsync();
+                var apps = await client.Apps.GetAllAsync();
 
                 var firstApp = apps.FirstOrDefault();
 
-                var app = await client.GetAppByIdAsync(firstApp.Id);
-                Assert.AreEqual(firstApp.Name, app.Name);
+                var app = await client.Apps.GetByIdAsync(firstApp.Id);
+                Assert.Equal(firstApp.Name, app.Name);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetNullWhenNotExistsAppId()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByIdAsync(InvalidId);
-                Assert.IsNull(app);
+                var app = await client.Apps.GetByIdAsync(InvalidId);
+                Assert.Null(app);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetAppByName()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetAppByNameAsync("SDKTest") == null)
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                if (await client.Apps.GetByNameAsync("SDKTest") == null)
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
 
-                var app = await client.GetAppByNameAsync("SDKTest");
-                Assert.IsNotNull(app);
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                Assert.NotNull(app);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldGetNullWhenNotExistsAppName()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var appTest = await client.GetAppByNameAsync("SDKTest");
+                var appTest = await client.Apps.GetByNameAsync("SDKTest");
                 if (appTest != null)
-                    await client.DeleteAppAsync(appTest.Id);
+                    await client.Apps.DeleteAsync(appTest.Id);
 
-                var app = await client.GetAppByNameAsync("SDKTest");
-                Assert.IsNull(app);
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                Assert.Null(app);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldAddNewAppSDKTest()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var appTest = await client.GetAppByNameAsync("SDKTest");
+                var appTest = await client.Apps.GetByNameAsync("SDKTest");
                 if (appTest != null)
-                    await client.DeleteAppAsync(appTest.Id);
+                    await client.Apps.DeleteAsync(appTest.Id);
 
-                var newId = await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
-                Assert.IsNotNull(newId);
+                var newId = await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                Assert.NotNull(newId);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnAddNewAppSDKTestWhenAlreadyExists()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                    client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion));
 
-                Assert.AreEqual(ex.Message, "BadArgument - SDKTest already exists.");
+                Assert.Equal("BadArgument - An application with the same name (SDKTest) already exists.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldRenameAppSDKTest()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByNameAsync("SDKTest");
-                var appChanged = await client.GetAppByNameAsync("SDKTestChanged");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                var appChanged = await client.Apps.GetByNameAsync("SDKTestChanged");
 
                 if (app == null)
                 {
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
-                    app = await client.GetAppByNameAsync("SDKTest");
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                    app = await client.Apps.GetByNameAsync("SDKTest");
                 }
 
                 if (appChanged != null)
-                    await client.DeleteAppAsync(appChanged.Id);
-                
-                await client.RenameAppAsync(app.Id, "SDKTestChanged", "Description changed");
+                    await client.Apps.DeleteAsync(appChanged.Id);
 
-                app = await client.GetAppByIdAsync(app.Id);
-                Assert.AreEqual("SDKTestChanged", app.Name);
+                await client.Apps.RenameAsync(app.Id, "SDKTestChanged", "Description changed");
+
+                app = await client.Apps.GetByIdAsync(app.Id);
+                Assert.Equal("SDKTestChanged", app.Name);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnRenameAppSDKTestWhenExistsAppWithSameName()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var app = await client.GetAppByNameAsync("SDKTest");
-                var appChanged = await client.GetAppByNameAsync("SDKTestChanged");
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                var appChanged = await client.Apps.GetByNameAsync("SDKTestChanged");
                 string appChangedId = null;
 
                 if (app == null)
                 {
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
-                    app = await client.GetAppByNameAsync("SDKTest");
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                    app = await client.Apps.GetByNameAsync("SDKTest");
                 }
                 if (appChanged == null)
-                    appChangedId = await client.AddAppAsync("SDKTestChanged", "Description changed", "en-us", "SDKTest", string.Empty, appVersion);
+                    appChangedId = await client.Apps.AddAsync("SDKTestChanged", "Description changed", "en-us", "SDKTest", string.Empty, appVersion);
 
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                    client.RenameAppAsync(app.Id, "SDKTestChanged", "Description changed"));
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Apps.RenameAsync(app.Id, "SDKTestChanged", "Description changed"));
 
-                Assert.AreEqual(ex.Message, "BadArgument - SDKTestChanged already exists.");
+                Assert.Equal("BadArgument - An application with the same name (SDKTestChanged) already exists.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnRenameAppSDKTestWhenNotExists()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() =>
-                    client.RenameAppAsync(InvalidId, "SDKTest", "SDKTestChanged"));
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Apps.RenameAsync(InvalidId, "SDKTest", "SDKTestChanged"));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
+                Assert.Equal("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldDeleteAppSDKTest()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                if (await client.GetAppByNameAsync("SDKTest") == null)
-                    await client.AddAppAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
+                if (await client.Apps.GetByNameAsync("SDKTest") == null)
+                    await client.Apps.AddAsync("SDKTest", "Description test", "en-us", "SDKTest", string.Empty, appVersion);
 
-                var app = await client.GetAppByNameAsync("SDKTest");
-                await client.DeleteAppAsync(app.Id);
-                var newapp = await client.GetAppByIdAsync(app.Id);
+                var app = await client.Apps.GetByNameAsync("SDKTest");
+                await client.Apps.DeleteAsync(app.Id);
+                var newapp = await client.Apps.GetByIdAsync(app.Id);
 
-                Assert.IsNull(newapp);
+                Assert.Null(newapp);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ShouldThrowExceptionOnDeleteAppSDKTestWhenNotExists()
         {
-            using(var client = new LuisProgClient(SubscriptionKey, Region))
+            using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var ex = await Assert.ThrowsExceptionAsync<Exception>(() => 
-                    client.DeleteAppAsync(InvalidId));
+                var ex = await Assert.ThrowsAsync<Exception>(() =>
+                    client.Apps.DeleteAsync(InvalidId));
 
-                Assert.AreEqual(ex.Message, "BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.");
+                Assert.Equal("BadArgument - Cannot find an application with the ID 51593248-363e-4a08-b946-2061964dc690.", ex.Message);
             }
         }
+
+        public override void Dispose() =>
+            Cleanup();
     }
 }
