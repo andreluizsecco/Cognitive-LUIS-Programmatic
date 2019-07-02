@@ -6,8 +6,8 @@ namespace Cognitive.LUIS.Programmatic
 {
     public class PublishService : ServiceClient, IPublishService
     {
-        public PublishService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public PublishService(string subscriptionKey, Regions region, RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Publishes a specific version of the application
@@ -23,7 +23,7 @@ namespace Cognitive.LUIS.Programmatic
             {
                 versionId = appVersionId,
                 isStaging = isStaging.ToString(),
-                directVersionPublish = directVersionPublish
+                directVersionPublish
             };
             var response = await Post($"apps/{appId}/publish", model);
             return JsonConvert.DeserializeObject<Publish>(response);

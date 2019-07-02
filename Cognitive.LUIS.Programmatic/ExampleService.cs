@@ -8,8 +8,8 @@ namespace Cognitive.LUIS.Programmatic.Examples
 {
     public class ExampleService : ServiceClient, IExampleService
     {
-        public ExampleService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public ExampleService(string subscriptionKey, Regions region, RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Gets examples to be reviewed.

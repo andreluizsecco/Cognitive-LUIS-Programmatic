@@ -10,8 +10,8 @@ namespace Cognitive.LUIS.Programmatic.Training
 {
     public class TrainingService : ServiceClient, ITrainingService
     {
-        public TrainingService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public TrainingService(string subscriptionKey, Regions region, RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Sends a training request for a version of a specified LUIS app

@@ -4,7 +4,7 @@ namespace Cognitive.LUIS.Programmatic.Tests
 {
     public abstract class BaseTest : IDisposable
     {
-        protected const string SubscriptionKey = "{YourSubscriptionKey}";
+        protected const string SubscriptionKey = "a2b9d6bd1c31416ca3fd18e09238b545";
         protected const Regions Region = Regions.WestUS;
         protected const string InvalidId = "51593248-363e-4a08-b946-2061964dc690";
         protected const string appVersion = "1.0";
