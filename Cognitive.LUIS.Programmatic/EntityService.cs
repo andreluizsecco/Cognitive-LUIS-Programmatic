@@ -9,8 +9,8 @@ namespace Cognitive.LUIS.Programmatic.Entities
 {
     public class EntityService : ServiceClient, IEntityService
     {
-        public EntityService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public EntityService(string subscriptionKey, Regions region, RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Gets information about the simple entity models
@@ -248,7 +248,7 @@ namespace Cognitive.LUIS.Programmatic.Entities
         {
             var entity = new
             {
-                name = name
+                name
             };
             var response = await Post($"apps/{appId}/versions/{appVersionId}/entities", entity);
             return JsonConvert.DeserializeObject<string>(response);
@@ -266,8 +266,8 @@ namespace Cognitive.LUIS.Programmatic.Entities
         {
             var entity = new
             {
-                name = name,
-                children = children
+                name,
+                children
             };
             var response = await Post($"apps/{appId}/versions/{appVersionId}/compositeentities", entity);
             return JsonConvert.DeserializeObject<string>(response);
@@ -285,7 +285,7 @@ namespace Cognitive.LUIS.Programmatic.Entities
         {
             var entity = new
             {
-                name = name,
+                name,
                 sublists = subLists
             };
             var response = await Post($"apps/{appId}/versions/{appVersionId}/closedlists", entity);
@@ -304,8 +304,8 @@ namespace Cognitive.LUIS.Programmatic.Entities
         {
             var entity = new
             {
-                name = name,
-                regexPattern = regexPattern
+                name,
+                regexPattern
             };
             var response = await Post($"apps/{appId}/versions/{appVersionId}/regexentities", entity);
             return JsonConvert.DeserializeObject<string>(response);
@@ -323,8 +323,8 @@ namespace Cognitive.LUIS.Programmatic.Entities
         {
             var entity = new
             {
-                name = name,
-                explicitList = explicitList
+                name,
+                explicitList
             };
             var response = await Post($"apps/{appId}/versions/{appVersionId}/patternanyentities", entity);
             return JsonConvert.DeserializeObject<string>(response);
@@ -342,7 +342,7 @@ namespace Cognitive.LUIS.Programmatic.Entities
         {
             var entity = new
             {
-                name = name
+                name
             };
             await Put($"apps/{appId}/versions/{appVersionId}/entities/{id}", entity);
         }

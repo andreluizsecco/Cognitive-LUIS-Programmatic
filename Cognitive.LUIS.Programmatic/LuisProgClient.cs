@@ -33,13 +33,13 @@ namespace Cognitive.LUIS.Programmatic
 
         public void Dispose()
         {
-            Apps.Dispose();
-            Entities.Dispose();
-            Examples.Dispose();
-            Intents.Dispose();
-            Publishing.Dispose();
-            Versions.Dispose();
-            Training.Dispose();
+            Apps?.Dispose();
+            Entities?.Dispose();
+            Examples?.Dispose();
+            Intents?.Dispose();
+            Publishing?.Dispose();
+            Versions?.Dispose();
+            Training?.Dispose();
         }
     }
 }

@@ -9,8 +9,10 @@ namespace Cognitive.LUIS.Programmatic.Apps
 {
     public class AppService : ServiceClient, IAppService
     {
-        public AppService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public AppService(string subscriptionKey, 
+                          Regions region, 
+                          RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Lists all of the user applications
@@ -65,12 +67,12 @@ namespace Cognitive.LUIS.Programmatic.Apps
         {
             var app = new
             {
-                name = name,
-                description = description,
-                culture = culture,
-                usageScenario = usageScenario,
-                domain = domain,
-                initialVersionId = initialVersionId
+                name,
+                description,
+                culture,
+                usageScenario,
+                domain,
+                initialVersionId
             };
             var response = await Post($"apps", app);
             return JsonConvert.DeserializeObject<string>(response);
@@ -87,8 +89,8 @@ namespace Cognitive.LUIS.Programmatic.Apps
         {
             var app = new
             {
-                name = name,
-                description = description
+                name,
+                description
             };
             await Put($"apps/{id}", app);
         }

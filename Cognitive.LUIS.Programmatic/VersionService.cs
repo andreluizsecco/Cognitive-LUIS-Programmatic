@@ -7,8 +7,8 @@ namespace Cognitive.LUIS.Programmatic.Versions
 {
     public class VersionService : ServiceClient, IVersionService
     {
-        public VersionService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public VersionService(string subscriptionKey, Regions region, RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Gets the application versions info

@@ -9,8 +9,8 @@ namespace Cognitive.LUIS.Programmatic.Intents
 {
     public class IntentService : ServiceClient, IIntentService
     {
-        public IntentService(string subscriptionKey, Regions region)
-            : base(subscriptionKey, region) { }
+        public IntentService(string subscriptionKey, Regions region, RetryPolicyConfiguration retryPolicyConfiguration = null)
+            : base(subscriptionKey, region, retryPolicyConfiguration) { }
 
         /// <summary>
         /// Gets information about the intent models
@@ -71,7 +71,7 @@ namespace Cognitive.LUIS.Programmatic.Intents
         {
             var intent = new
             {
-                name = name
+                name
             };
             var response = await Post($"apps/{appId}/versions/{appVersionId}/intents", intent);
             return JsonConvert.DeserializeObject<string>(response);
@@ -89,7 +89,7 @@ namespace Cognitive.LUIS.Programmatic.Intents
         {
             var intent = new
             {
-                name = name
+                name
             };
             await Put($"apps/{appId}/versions/{appVersionId}/intents/{id}", intent);
         }
